@@ -1,0 +1,20 @@
+import { NextRequest, NextResponse } from "next/server";
+import dbConnect from "@/lib/dbConnect";
+import { ArchiveItem } from "@/models/ArchiveItem";
+
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+    try {
+        await dbConnect();
+        const { slug } = await params;
+
+        const item = await ArchiveItem.findOne({ slug }).populate("author", "username").lean();
+        if (!item) {
+            return NextResponse.json({ error: "Archive entry not found" }, { status: 404 });
+        }
+
+        return NextResponse.json({ item });
+    } catch (err) {
+        console.error("Entry error:", err);
+        return NextResponse.json({ error: "Server error" }, { status: 500 });
+    }
+}
