@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import { ArchiveItem } from "@/models/ArchiveItem";
+import { normalizeImageUrl } from "@/lib/media";
 
 export async function GET(
     _req: NextRequest,
@@ -19,7 +20,11 @@ export async function GET(
             $or: orClauses,
         };
 
-        const items = await ArchiveItem.find(query).select("title slug thumbnail category subType").lean();
+        const itemsRaw = await ArchiveItem.find(query).select("title slug thumbnail category subType").lean();
+        const items = itemsRaw.map((item) => ({
+            ...item,
+            thumbnail: normalizeImageUrl(item.thumbnail as string | undefined),
+        }));
 
         return NextResponse.json({
             items,

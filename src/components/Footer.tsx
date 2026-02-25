@@ -8,7 +8,7 @@ export default function Footer() {
                         Brought to you by the Shopnotory Foundation in partnership with the community of Chilahati.
                     </p>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/photos/founding_group.png" alt="Founding Group Logo" className="footer-logo" />
+                    <img src="/founding_group.png" alt="Founding Group Logo" className="footer-logo" />
                 </div>
             </div>
         </footer>

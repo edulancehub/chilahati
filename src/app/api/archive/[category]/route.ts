@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import { ArchiveItem, Institution, Transport, Emergency, SUB_TYPE_MAP } from "@/models/ArchiveItem";
+import { normalizeImageUrl } from "@/lib/media";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ category: string }> }) {
     try {
@@ -51,7 +52,11 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ cat
 
         if (!foundField || subTypes.length === 0) {
             const queryCategory = category.replace(/-/g, " ");
-            const items = await ArchiveItem.find({ category: new RegExp("^" + queryCategory + "$", "i") }).lean();
+            const itemsRaw = await ArchiveItem.find({ category: new RegExp("^" + queryCategory + "$", "i") }).lean();
+            const items = itemsRaw.map((item) => ({
+                ...item,
+                thumbnail: normalizeImageUrl(item.thumbnail as string | undefined),
+            }));
             return NextResponse.json({ type: "list", items, title: queryCategory, category: queryCategory });
         }
 

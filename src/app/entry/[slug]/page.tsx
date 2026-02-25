@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { normalizeImageUrl } from "@/lib/media";
 
 interface BodyBlock {
     type: string;
@@ -82,7 +83,7 @@ export default function EntryPage({ params }: { params: Promise<{ slug: string }
                 if (data.error) {
                     setError(data.error);
                 } else {
-                    setItem(data);
+                    setItem(data.item ?? data);
                 }
             })
             .catch(() => setError("Failed to load entry"))
@@ -135,7 +136,7 @@ export default function EntryPage({ params }: { params: Promise<{ slug: string }
             return (
                 <figure key={block.order} className="block-image">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={imgUrl} alt={imgCaption || item.title} referrerPolicy="no-referrer" style={{ maxWidth: "100%", height: "auto" }} />
+                    <img src={normalizeImageUrl(imgUrl)} alt={imgCaption || item.title} referrerPolicy="no-referrer" style={{ maxWidth: "100%", height: "auto" }} />
                     {imgCaption && <figcaption>{imgCaption}</figcaption>}
                 </figure>
             );
@@ -238,7 +239,7 @@ export default function EntryPage({ params }: { params: Promise<{ slug: string }
                     {item.thumbnail && (
                         <div className="infobox-image">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={item.thumbnail} alt="Thumbnail" referrerPolicy="no-referrer" />
+                            <img src={normalizeImageUrl(item.thumbnail)} alt="Thumbnail" referrerPolicy="no-referrer" />
                         </div>
                     )}
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import { ArchiveItem } from "@/models/ArchiveItem";
+import { normalizeImageUrl } from "@/lib/media";
 
 export async function GET(req: NextRequest) {
     try {
@@ -68,7 +69,10 @@ export async function GET(req: NextRequest) {
             return new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime();
         });
 
-        const paginatedResults = results.slice(skip, skip + limit);
+        const paginatedResults = results.slice(skip, skip + limit).map((item) => ({
+            ...item,
+            thumbnail: normalizeImageUrl(item.thumbnail as string | undefined),
+        }));
 
         return NextResponse.json({
             results: paginatedResults,
