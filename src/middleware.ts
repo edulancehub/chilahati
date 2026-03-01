@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-const secret = new TextEncoder().encode(process.env.JWT_SECRET || "fallback-secret-change-me");
+const secret = new TextEncoder().encode(process.env.JWT_SECRET || process.env.SESSION_SECRET || "fallback-secret-change-me");
 
 const protectedRoutes = ["/profile", "/contribute"];
 const adminRoutes = ["/admin"];
@@ -9,7 +9,7 @@ const authRoutes = ["/login", "/register"];
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
-    const token = request.cookies.get("session")?.value;
+    const token = request.cookies.get("session-token")?.value;
 
     let session: { role?: string } | null = null;
     if (token) {

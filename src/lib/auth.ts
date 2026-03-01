@@ -2,7 +2,9 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "fallback-secret-change-me");
+const JWT_SECRET = new TextEncoder().encode(
+    process.env.JWT_SECRET || process.env.SESSION_SECRET || "fallback-secret-change-me"
+);
 const COOKIE_NAME = "session-token";
 
 export interface SessionPayload {
