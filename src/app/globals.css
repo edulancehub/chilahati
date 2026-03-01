@@ -2510,7 +2510,7 @@ body.dark-mode .admin-header {
     flex-direction: column;
   }
 
-  .btn-group > * {
+  .btn-group>* {
     width: 100%;
     text-align: center;
     justify-content: center;
