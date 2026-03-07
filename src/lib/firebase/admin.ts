@@ -14,7 +14,12 @@ function getFirebaseAdminApp(): App {
     const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
 
     if (!projectId || !clientEmail || !privateKey) {
-        throw new Error("Firebase Admin environment variables are not configured.");
+        const missing = [
+            !projectId && "FIREBASE_PROJECT_ID",
+            !clientEmail && "FIREBASE_CLIENT_EMAIL",
+            !privateKey && "FIREBASE_PRIVATE_KEY",
+        ].filter(Boolean).join(", ");
+        throw new Error(`Firebase Admin environment variables are not configured. Missing: ${missing}`);
     }
 
     return initializeApp({

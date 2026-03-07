@@ -55,6 +55,15 @@ export async function POST(req: NextRequest) {
         });
     } catch (err) {
         console.error("Firebase session error:", err);
-        return NextResponse.json({ error: "Unable to authenticate with Firebase" }, { status: 500 });
+        const message =
+            err instanceof Error ? err.message : "Unable to authenticate with Firebase";
+        // Surface Admin SDK config errors clearly in development
+        if (message.includes("environment variables")) {
+            return NextResponse.json(
+                { error: "Server configuration error: Firebase Admin SDK credentials are missing. Set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY in your environment." },
+                { status: 500 }
+            );
+        }
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }
