@@ -13,8 +13,26 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Chilahati Archive - Discover Our Heritage",
-  description: "Gateway to the North - Preserving Our History & People",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.chilahati.com"),
+  title: {
+    default: "Chilahati.com | Community Archive",
+    template: "%s | Chilahati.com",
+  },
+  description: "Chilahati.com preserves the history, people, institutions, and stories of Chilahati.",
+  applicationName: "Chilahati.com",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
+  openGraph: {
+    title: "Chilahati.com | Community Archive",
+    description: "Preserving the stories, heritage, and living memory of Chilahati.",
+    url: "/",
+    siteName: "Chilahati.com",
+    locale: "en_US",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

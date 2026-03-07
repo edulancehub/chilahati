@@ -3,6 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import FlashMessage from "@/components/FlashMessage";
+import { useRouter } from "next/navigation";
+import { getFirebaseClientAuth, getGoogleProvider } from "@/lib/firebase/client";
+import { exchangeFirebaseSession } from "@/lib/firebase/session";
+import { createUserWithEmailAndPassword, sendEmailVerification, signInWithPopup, signOut, updateProfile } from "firebase/auth";
 
 export default function RegisterPage() {
     const [username, setUsername] = useState("");
@@ -13,6 +17,7 @@ export default function RegisterPage() {
     const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
     const [passwordMismatch, setPasswordMismatch] = useState(false);
+    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -26,20 +31,45 @@ export default function RegisterPage() {
 
         setLoading(true);
         try {
-            const res = await fetch("/api/auth/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, email, password }),
-            });
-            const data = await res.json();
+            const auth = getFirebaseClientAuth();
+            const credential = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(credential.user, { displayName: username.trim() });
+            await sendEmailVerification(credential.user);
+            await signOut(auth);
+            setSuccess("Account created. Please verify your email from Firebase before logging in.");
+            setUsername("");
+            setEmail("");
+            setPassword("");
+            setConfirmPassword("");
+        } catch (err) {
+            const message = err instanceof Error ? err.message : "Registration failed";
+            setError(message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-            if (!res.ok) {
-                setError(data.error || "Registration failed");
+    const handleGoogleRegister = async () => {
+        setError("");
+        setSuccess("");
+        setLoading(true);
+
+        try {
+            const credential = await signInWithPopup(getFirebaseClientAuth(), getGoogleProvider());
+            await exchangeFirebaseSession(credential.user);
+            router.push("/");
+        } catch (err) {
+            const code = (err as { code?: string }).code;
+            if (code === "auth/unauthorized-domain") {
+                setError("This domain is not authorised for Google sign-in. Please add it to Firebase Console → Authentication → Authorized Domains.");
+            } else if (code === "auth/popup-blocked") {
+                setError("Your browser blocked the sign-in popup. Please allow popups for this site and try again.");
+            } else if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") {
+                setError("Google sign-up was cancelled. Please try again.");
             } else {
-                setSuccess(data.message || "Account created! Please check your email to verify.");
+                const message = err instanceof Error ? err.message : "Google sign-up failed";
+                setError(message);
             }
-        } catch {
-            setError("Network error. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -119,6 +149,16 @@ export default function RegisterPage() {
                         {loading ? "Creating Account..." : "Create Account"}
                     </button>
                 </form>
+
+                <button
+                    type="button"
+                    className="btn-block"
+                    disabled={loading}
+                    onClick={handleGoogleRegister}
+                    style={{ marginTop: "0.85rem", background: "#ffffff", color: "#1f2937" }}
+                >
+                    <i className="fab fa-google"></i> Continue with Google
+                </button>
 
                 <div className="auth-footer">
                     Already have an account?

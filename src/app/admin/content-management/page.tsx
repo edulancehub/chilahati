@@ -14,9 +14,30 @@ interface ContentItem {
     createdAt: string;
 }
 
+interface SubmissionItem {
+    _id: string;
+    title: string;
+    category: string;
+    subType?: string;
+    message: string;
+    sourceLink?: string;
+    status: "pending" | "approved" | "rejected";
+    createdAt: string;
+    adminNotes?: string;
+    submittedBy?: {
+        username?: string;
+        email?: string;
+    };
+    publishedEntry?: {
+        slug: string;
+        title: string;
+    };
+}
+
 export default function ContentManagementPage() {
     const { user } = useAuth();
     const [items, setItems] = useState<ContentItem[]>([]);
+    const [submissions, setSubmissions] = useState<SubmissionItem[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
@@ -24,6 +45,20 @@ export default function ContentManagementPage() {
     const [loading, setLoading] = useState(true);
     const [success, setSuccess] = useState("");
     const [error, setError] = useState("");
+
+    const fetchSubmissions = useCallback(async () => {
+        try {
+            const res = await fetch("/api/admin/submissions");
+            const data = await res.json();
+            if (!res.ok) {
+                setError(data.error || "Failed to load submissions");
+                return;
+            }
+            setSubmissions(data.submissions || []);
+        } catch {
+            setError("Network error");
+        }
+    }, []);
 
     const fetchItems = useCallback(async (page: number, q: string) => {
         setLoading(true);
@@ -43,7 +78,8 @@ export default function ContentManagementPage() {
 
     useEffect(() => {
         fetchItems(1, "");
-    }, [fetchItems]);
+        fetchSubmissions();
+    }, [fetchItems, fetchSubmissions]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -66,12 +102,49 @@ export default function ContentManagementPage() {
         } catch { setError("Network error"); }
     };
 
+    const reviewSubmission = async (submissionId: string, action: "approve" | "reject") => {
+        const adminNotes = action === "reject"
+            ? window.prompt("Optional rejection note for this contributor:", "") || ""
+            : "";
+
+        try {
+            const res = await fetch(`/api/admin/submissions/${submissionId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action, adminNotes }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                setError(data.error || "Submission review failed");
+                return;
+            }
+
+            setSuccess(action === "approve" ? "Submission approved and published." : "Submission rejected.");
+            await fetchSubmissions();
+            await fetchItems(currentPage, searchQuery);
+        } catch {
+            setError("Network error");
+        }
+    };
+
     if (!user) {
         return (
             <div className="auth-container">
                 <div className="auth-card">
                     <h2>Login Required</h2>
                     <Link href="/login" className="btn-block" style={{ marginTop: "1rem" }}>Go to Login</Link>
+                </div>
+            </div>
+        );
+    }
+
+    if (user.role !== "admin") {
+        return (
+            <div className="auth-container">
+                <div className="auth-card">
+                    <h2>Access Denied</h2>
+                    <p style={{ color: "rgba(255,255,255,0.7)" }}>Only admin accounts can review or publish archive content.</p>
+                    <Link href="/" className="btn-block" style={{ marginTop: "1rem" }}>Go Home</Link>
                 </div>
             </div>
         );
@@ -109,6 +182,67 @@ export default function ContentManagementPage() {
 
             <FlashMessage type="success" message={success} />
             <FlashMessage type="error" message={error} />
+
+            <section className="management-list" style={{ marginBottom: "2rem" }}>
+                <div className="management-item" style={{ display: "block" }}>
+                    <div className="item-info" style={{ marginBottom: "1rem" }}>
+                        <h3>Community Submissions</h3>
+                        <div className="item-meta">
+                            <span className="item-category">{submissions.filter((submission) => submission.status === "pending").length} pending</span>
+                            <span><i className="fas fa-users"></i> Contributor stories need admin approval before publishing</span>
+                        </div>
+                    </div>
+
+                    {submissions.length === 0 ? (
+                        <p style={{ opacity: 0.8 }}>No community submissions yet.</p>
+                    ) : (
+                        submissions.map((submission) => (
+                            <div key={submission._id} className="management-item" style={{ marginTop: "1rem" }}>
+                                <div className="item-info">
+                                    <h3>{submission.title}</h3>
+                                    <div className="item-meta" style={{ flexWrap: "wrap" }}>
+                                        <span className="item-category">{submission.category}</span>
+                                        {submission.subType && <span><i className="fas fa-tag"></i> {submission.subType}</span>}
+                                        <span><i className="fas fa-user"></i> {submission.submittedBy?.username || "Unknown contributor"}</span>
+                                        <span><i className="fas fa-envelope"></i> {submission.submittedBy?.email || "No email"}</span>
+                                        <span><i className="far fa-calendar-alt"></i> {new Date(submission.createdAt).toLocaleDateString()}</span>
+                                        <span style={{ textTransform: "capitalize" }}><i className="fas fa-flag"></i> {submission.status}</span>
+                                    </div>
+                                    <p style={{ marginTop: "0.85rem", lineHeight: 1.6 }}>{submission.message}</p>
+                                    {submission.sourceLink && (
+                                        <p style={{ marginTop: "0.65rem" }}>
+                                            <a href={submission.sourceLink} target="_blank" rel="noopener noreferrer" className="action-btn btn-view">
+                                                <i className="fas fa-link"></i> Open Source Link
+                                            </a>
+                                        </p>
+                                    )}
+                                    {submission.publishedEntry && (
+                                        <p style={{ marginTop: "0.65rem" }}>
+                                            Published as <Link href={`/entry/${submission.publishedEntry.slug}`} target="_blank">{submission.publishedEntry.title}</Link>
+                                        </p>
+                                    )}
+                                    {submission.adminNotes && (
+                                        <p style={{ marginTop: "0.65rem", opacity: 0.9 }}>
+                                            <strong>Admin note:</strong> {submission.adminNotes}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {submission.status === "pending" && (
+                                    <div className="item-actions">
+                                        <button onClick={() => reviewSubmission(submission._id, "approve")} className="action-btn btn-edit" title="Approve and publish">
+                                            <i className="fas fa-check"></i> Approve
+                                        </button>
+                                        <button onClick={() => reviewSubmission(submission._id, "reject")} className="action-btn btn-delete" title="Reject submission">
+                                            <i className="fas fa-times"></i> Reject
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    )}
+                </div>
+            </section>
 
             {searchQuery && (
                 <div style={{
@@ -160,7 +294,7 @@ export default function ContentManagementPage() {
                     <div className="empty-state">
                         <i className={searchQuery ? "fas fa-search-minus" : "far fa-folder-open"} style={{ fontSize: "3rem", opacity: 0.5 }}></i>
                         <h2>{searchQuery ? "No matches found" : "No contents found"}</h2>
-                        <p>{searchQuery ? `We couldn't find any entries matching "${searchQuery}".` : "You haven't added any entries to the archive yet."}</p>
+                        <p>{searchQuery ? `We couldn't find any entries matching "${searchQuery}".` : "No archive entries have been published yet."}</p>
                         {searchQuery ? (
                             <button onClick={clearSearch} className="action-btn btn-view" style={{ marginTop: "1rem" }}>
                                 <i className="fas fa-sync-alt"></i> View All Content

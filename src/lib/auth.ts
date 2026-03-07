@@ -12,6 +12,7 @@ export interface SessionPayload {
     username: string;
     email: string;
     role: "admin" | "supervisor" | "user";
+    provider?: "password" | "google";
 }
 
 export async function createSessionToken(payload: SessionPayload): Promise<string> {
@@ -75,6 +76,14 @@ export async function requireAuth(): Promise<SessionPayload> {
 export async function requireStaff(): Promise<SessionPayload> {
     const session = await requireAuth();
     if (session.role !== "admin" && session.role !== "supervisor") {
+        throw new Error("FORBIDDEN");
+    }
+    return session;
+}
+
+export async function requireAdmin(): Promise<SessionPayload> {
+    const session = await requireAuth();
+    if (session.role !== "admin") {
         throw new Error("FORBIDDEN");
     }
     return session;

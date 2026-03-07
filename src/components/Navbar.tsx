@@ -67,7 +67,7 @@ export default function Navbar() {
         setMobileCatOpen(false);
     }
 
-    const isStaff = user && (user.role === "admin" || user.role === "supervisor");
+    const isAdmin = user?.role === "admin";
 
     const categoryLinks = [
         { href: "/archive/history", icon: "fas fa-history", label: "History" },
@@ -108,8 +108,8 @@ export default function Navbar() {
                     </div>
 
                     <Link href="/contribute" className="nav-item">Contribute</Link>
-                    <Link href="#" className="nav-item">Contact</Link>
-                    <Link href="#" className="nav-item">About Us</Link>
+                    <Link href="/contact" className="nav-item">Contact</Link>
+                    <Link href="/about" className="nav-item">About Us</Link>
                 </div>
 
                 <div className="nav-actions">
@@ -137,13 +137,13 @@ export default function Navbar() {
                         </>
                     ) : (
                         <>
-                            {isStaff && (
+                            {isAdmin && (
                                 <Link href="/admin/add" className="nav-item" style={{ color: "#ffda79" }}>
                                     <i className="fas fa-plus-circle"></i> Add Content
                                 </Link>
                             )}
 
-                            {isStaff ? (
+                            {isAdmin ? (
                                 <div className={`dropdown ${userOpen ? "active" : ""}`} ref={userRef}>
                                     <button className="nav-item dropdown-toggle" onClick={() => setUserOpen(!userOpen)}>
                                         Hi, {user.username} <i className="fas fa-chevron-down" style={{ fontSize: "0.8em", marginLeft: "5px" }}></i>
@@ -151,9 +151,6 @@ export default function Navbar() {
                                     <div className="dropdown-menu">
                                         <Link href="/profile" className="dropdown-item"><i className="fas fa-user"></i> Profile</Link>
                                         <Link href="/admin/content-management" className="dropdown-item"><i className="fas fa-file-alt"></i> Content Management</Link>
-                                        {user.role === "admin" && (
-                                            <Link href="/admin-panel" className="dropdown-item"><i className="fas fa-user-shield"></i> Admin Panel</Link>
-                                        )}
                                     </div>
                                 </div>
                             ) : (
@@ -215,19 +212,19 @@ export default function Navbar() {
                     <Link href="/contribute" className="mobile-nav-item" onClick={closeMobile}>
                         <i className="fas fa-paper-plane"></i> Contribute
                     </Link>
-                    <Link href="#" className="mobile-nav-item" onClick={closeMobile}>
+                    <Link href="/contact" className="mobile-nav-item" onClick={closeMobile}>
                         <i className="fas fa-envelope"></i> Contact
                     </Link>
-                    <Link href="#" className="mobile-nav-item" onClick={closeMobile}>
+                    <Link href="/about" className="mobile-nav-item" onClick={closeMobile}>
                         <i className="fas fa-info-circle"></i> About Us
                     </Link>
 
-                    {isStaff && (
+                    {isAdmin && (
                         <Link href="/admin/add" className="mobile-nav-item" onClick={closeMobile} style={{ color: "#ffda79" }}>
                             <i className="fas fa-plus-circle"></i> Add Content
                         </Link>
                     )}
-                    {isStaff && (
+                    {isAdmin && (
                         <Link href="/admin/content-management" className="mobile-nav-item" onClick={closeMobile}>
                             <i className="fas fa-file-alt"></i> Content Management
                         </Link>

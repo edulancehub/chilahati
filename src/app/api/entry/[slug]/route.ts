@@ -1,25 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/dbConnect";
-import { ArchiveItem } from "@/models/ArchiveItem";
+import { getArchiveItemBySlug } from "@/lib/firestore";
 import { normalizeBodyContentImages, normalizeImageUrl } from "@/lib/media";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
     try {
-        await dbConnect();
         const { slug } = await params;
+        const item = await getArchiveItemBySlug(slug);
+        if (!item) return NextResponse.json({ error: "Archive entry not found" }, { status: 404 });
 
-        const itemRaw = await ArchiveItem.findOne({ slug }).populate("author", "username").lean();
-        if (!itemRaw) {
-            return NextResponse.json({ error: "Archive entry not found" }, { status: 404 });
-        }
-
-        const item = {
-            ...itemRaw,
-            thumbnail: normalizeImageUrl(itemRaw.thumbnail as string | undefined),
-            bodyContent: normalizeBodyContentImages(itemRaw.bodyContent),
+        const normalized = {
+            ...item,
+            thumbnail: normalizeImageUrl(item.thumbnail as string | undefined),
+            bodyContent: normalizeBodyContentImages(
+                item.bodyContent as { type?: string; content?: unknown }[]
+            ),
         };
 
-        return NextResponse.json({ item });
+        return NextResponse.json({ item: normalized });
     } catch (err) {
         console.error("Entry error:", err);
         return NextResponse.json({ error: "Server error" }, { status: 500 });

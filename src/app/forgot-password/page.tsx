@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import FlashMessage from "@/components/FlashMessage";
+import { getFirebaseClientAuth } from "@/lib/firebase/client";
+import { sendPasswordResetEmail } from "firebase/auth";
 
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState("");
@@ -17,20 +19,11 @@ export default function ForgotPasswordPage() {
         setLoading(true);
 
         try {
-            const res = await fetch("/api/auth/forgot-password", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email }),
-            });
-            const data = await res.json();
-
-            if (!res.ok) {
-                setError(data.error || "Failed to send reset link");
-            } else {
-                setSuccess(data.message || "Reset link sent! Check your email.");
-            }
-        } catch {
-            setError("Network error. Please try again.");
+            await sendPasswordResetEmail(getFirebaseClientAuth(), email);
+            setSuccess("Password reset email sent. Firebase will open its secure reset flow from the email link.");
+        } catch (err) {
+            const message = err instanceof Error ? err.message : "Failed to send reset link";
+            setError(message);
         } finally {
             setLoading(false);
         }

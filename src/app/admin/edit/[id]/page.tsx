@@ -192,11 +192,12 @@ export default function AdminEditPage({ params }: { params: Promise<{ id: string
         } catch { setError("Network error"); }
     };
 
-    if (!user || (user.role !== "admin" && user.role !== "supervisor")) {
+    if (!user || user.role !== "admin") {
         return (
             <div className="auth-container">
                 <div className="auth-card">
                     <h2>Access Denied</h2>
+                    <p style={{ color: "rgba(255,255,255,0.7)" }}>Only admin accounts can edit archive entries.</p>
                     <Link href="/" className="btn-block" style={{ marginTop: "1rem" }}>Go Home</Link>
                 </div>
             </div>

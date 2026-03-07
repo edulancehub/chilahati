@@ -138,12 +138,12 @@ export default function AdminAddPage() {
         finally { setLoading(false); }
     };
 
-    if (!user || (user.role !== "admin" && user.role !== "supervisor")) {
+    if (!user || user.role !== "admin") {
         return (
             <div className="auth-container">
                 <div className="auth-card">
                     <h2>Access Denied</h2>
-                    <p style={{ color: "rgba(255,255,255,0.7)" }}>You need admin or supervisor privileges.</p>
+                    <p style={{ color: "rgba(255,255,255,0.7)" }}>Only admin accounts can publish archive entries.</p>
                     <Link href="/" className="btn-block" style={{ marginTop: "1rem" }}>Go Home</Link>
                 </div>
             </div>

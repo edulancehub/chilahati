@@ -40,7 +40,7 @@ export async function middleware(request: NextRequest) {
             url.searchParams.set("redirect", pathname);
             return NextResponse.redirect(url);
         }
-        if (session.role !== "admin" && session.role !== "supervisor") {
+        if (session.role !== "admin") {
             return NextResponse.redirect(new URL("/", request.url));
         }
     }

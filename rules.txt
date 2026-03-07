@@ -1,0 +1,46 @@
+// =============================================================================
+// FIRESTORE RULES
+// Paste this in: Firebase Console -> Firestore Database -> Rules tab
+// =============================================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+          && request.auth.token.email != null
+          && request.auth.token.email == 'sopnotory26@gmail.com';
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // archive_items: public reads, admin-only writes
+    match /archive_items/{slug} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // submissions: signed-in users can create; admin can read/update/delete
+    match /submissions/{submissionId} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if isAdmin();
+    }
+
+    // users: each user can read/write their own doc; admin can read all
+    match /users/{uid} {
+      allow read:   if isAdmin() || (isSignedIn() && request.auth.uid == uid);
+      allow create: if isSignedIn() && request.auth.uid == uid;
+      allow update: if isSignedIn() && request.auth.uid == uid;
+      allow delete: if isAdmin();
+    }
+
+    // contacts: anyone can create (no auth required); admin-only read
+    match /contacts/{contactId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}

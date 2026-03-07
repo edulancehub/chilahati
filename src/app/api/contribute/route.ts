@@ -1,25 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/dbConnect";
 import { requireAuth, authErrorResponse } from "@/lib/auth";
-import { sendMail } from "@/lib/email";
+import { createSubmission } from "@/lib/firestore";
 
 export async function POST(req: NextRequest) {
     try {
         const session = await requireAuth();
-        await dbConnect();
-        const { message } = await req.json();
+        const { title, category, subType, message, sourceLink } = await req.json();
 
-        if (!message || message.trim().length === 0) {
-            return NextResponse.json({ error: "Please enter a message" }, { status: 400 });
+        if (!title || !category || !message?.trim()) {
+            return NextResponse.json(
+                { error: "Please provide a title, category, and summary" },
+                { status: 400 }
+            );
         }
 
-        await sendMail(
-            process.env.CONTRIBUTE_RECEIVER_EMAIL || process.env.EMAIL_USER || "",
-            `Message from ${session.username} (${session.email})`,
-            `<p><strong>Contributor:</strong> ${session.username} (${session.email})</p><p><strong>Message:</strong></p><p>${message.replace(/\n/g, "<br>")}</p><hr><p><small>Sent via the Chilahati Archive contribution form.</small></p>`
-        );
+        await createSubmission({
+            title: title.trim(),
+            category,
+            subType: subType || null,
+            message: message.trim(),
+            sourceLink: sourceLink?.trim() || null,
+            submittedBy: session.userId,
+            submitterName: session.username,
+            submitterEmail: session.email,
+        });
 
-        return NextResponse.json({ success: true, message: "Thank you! Your message has been sent." });
+        return NextResponse.json({
+            success: true,
+            message: "Your contribution is now pending admin review.",
+        });
     } catch (err) {
         return authErrorResponse(err);
     }

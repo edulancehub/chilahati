@@ -1,70 +1,54 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/dbConnect";
-import { ArchiveItem, Institution, Transport, Emergency, SUB_TYPE_MAP } from "@/models/ArchiveItem";
+import { listArchiveItemsByCategory } from "@/lib/firestore";
 import { normalizeImageUrl } from "@/lib/media";
 
-export async function GET(_req: NextRequest, { params }: { params: Promise<{ category: string }> }) {
+const SUB_TYPE_MAP: Record<string, string[]> = {
+    institution: ["educational", "governmental", "Banks", "Religious", "other"],
+    transport: ["bus", "train", "auto stand", "launch-ghat"],
+    "emergency services": ["hospitals", "police", "fire"],
+};
+
+const CATEGORY_ALIASES: Record<string, string> = {
+    "notable-people": "notable people",
+    "freedom-fighters": "freedom fighters",
+    "meritorious-student": "meritorious student",
+    "hidden-talent": "hidden talent",
+    "heartbreaking-stories": "Heartbreaking stories",
+    "tourist-spots": "tourist spots",
+    "emergency-services": "Emergency services",
+    "social-works": "social works",
+};
+
+export async function GET(
+    _req: NextRequest,
+    { params }: { params: Promise<{ category: string }> }
+) {
     try {
-        await dbConnect();
         const { category } = await params;
-        const lower = category.toLowerCase().replace(/-/g, " ");
+        const resolvedCategory = CATEGORY_ALIASES[category] ?? category.replace(/-/g, " ");
+        const lower = resolvedCategory.toLowerCase();
 
-        // Check if this category has sub-types
-        const enumMap: Record<string, { model: typeof Institution; field: string }> = {
-            institution: { model: Institution, field: "subType" },
-            transport: { model: Transport, field: "transportType" },
-            "emergency services": { model: Emergency, field: "serviceType" },
-        };
-
-        let subTypes: string[] = [];
-        let foundField: string | null = null;
-
-        if (enumMap[lower]) {
-            const mapping = enumMap[lower];
-            const info = SUB_TYPE_MAP[lower] || SUB_TYPE_MAP[category];
-            if (info) {
-                subTypes = info.values;
-                foundField = info.field;
-            } else {
-                const schemaPath = mapping.model.schema.path(mapping.field);
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                if (schemaPath && (schemaPath as any).enumValues?.length > 0) {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    subTypes = (schemaPath as any).enumValues;
-                    foundField = mapping.field;
-                }
-            }
+        const subTypes = SUB_TYPE_MAP[lower];
+        if (subTypes) {
+            return NextResponse.json({
+                type: "sub-categories",
+                category: resolvedCategory,
+                subTypes,
+                title: `Explore ${resolvedCategory}`,
+            });
         }
 
-        if (!foundField) {
-            const candidateFields = ["subType", "transportType", "serviceType"];
-            const queryCategory = category.replace(/-/g, " ");
-            for (const field of candidateFields) {
-                const vals = await ArchiveItem.distinct(field, { category: new RegExp("^" + queryCategory + "$", "i") });
-                const cleaned = (vals || []).filter((v: unknown) => v !== undefined && v !== null && String(v).trim() !== "");
-                if (cleaned.length > 0) {
-                    foundField = field;
-                    subTypes = cleaned;
-                    break;
-                }
-            }
-        }
-
-        if (!foundField || subTypes.length === 0) {
-            const queryCategory = category.replace(/-/g, " ");
-            const itemsRaw = await ArchiveItem.find({ category: new RegExp("^" + queryCategory + "$", "i") }).lean();
-            const items = itemsRaw.map((item) => ({
-                ...item,
-                thumbnail: normalizeImageUrl(item.thumbnail as string | undefined),
-            }));
-            return NextResponse.json({ type: "list", items, title: queryCategory, category: queryCategory });
-        }
+        const itemsRaw = await listArchiveItemsByCategory(resolvedCategory);
+        const items = itemsRaw.map((item) => ({
+            ...item,
+            thumbnail: normalizeImageUrl(item.thumbnail as string | undefined),
+        }));
 
         return NextResponse.json({
-            type: "sub-categories",
-            category,
-            subTypes,
-            title: `Explore ${category.replace(/-/g, " ")}`,
+            type: "list",
+            items,
+            title: resolvedCategory,
+            category: resolvedCategory,
         });
     } catch (err) {
         console.error("Archive category error:", err);

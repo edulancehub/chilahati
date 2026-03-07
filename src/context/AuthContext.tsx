@@ -7,6 +7,7 @@ interface User {
     username: string;
     email: string;
     role: "admin" | "supervisor" | "user";
+    provider?: "password" | "google";
 }
 
 interface AuthContextType {

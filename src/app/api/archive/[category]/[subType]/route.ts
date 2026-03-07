@@ -1,26 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/dbConnect";
-import { ArchiveItem } from "@/models/ArchiveItem";
+import { listArchiveItemsByCategoryAndSubType } from "@/lib/firestore";
 import { normalizeImageUrl } from "@/lib/media";
+
+const CATEGORY_ALIASES: Record<string, string> = {
+    "notable-people": "notable people",
+    "freedom-fighters": "freedom fighters",
+    "meritorious-student": "meritorious student",
+    "hidden-talent": "hidden talent",
+    "heartbreaking-stories": "Heartbreaking stories",
+    "tourist-spots": "tourist spots",
+    "emergency-services": "Emergency services",
+    "social-works": "social works",
+};
 
 export async function GET(
     _req: NextRequest,
     { params }: { params: Promise<{ category: string; subType: string }> }
 ) {
     try {
-        await dbConnect();
         const { category, subType } = await params;
-        const queryCategory = category.replace(/-/g, " ");
+        const resolvedCategory = CATEGORY_ALIASES[category] ?? category.replace(/-/g, " ");
+        const decodedSubType = decodeURIComponent(subType);
 
-        const subtypeFields = ["subType", "transportType", "serviceType"];
-        const orClauses = subtypeFields.map((f) => ({ [f]: subType }));
-
-        const query = {
-            category: new RegExp("^" + queryCategory + "$", "i"),
-            $or: orClauses,
-        };
-
-        const itemsRaw = await ArchiveItem.find(query).select("title slug thumbnail category subType").lean();
+        const itemsRaw = await listArchiveItemsByCategoryAndSubType(resolvedCategory, decodedSubType);
         const items = itemsRaw.map((item) => ({
             ...item,
             thumbnail: normalizeImageUrl(item.thumbnail as string | undefined),
@@ -28,9 +30,9 @@ export async function GET(
 
         return NextResponse.json({
             items,
-            title: `${subType} ${queryCategory}`,
-            category: queryCategory,
-            subType,
+            title: `${decodedSubType} - ${resolvedCategory}`,
+            category: resolvedCategory,
+            subType: decodedSubType,
         });
     } catch (err) {
         console.error("Archive sub-type error:", err);
