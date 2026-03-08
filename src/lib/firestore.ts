@@ -248,3 +248,11 @@ export async function createContact(data: Record<string, unknown>): Promise<stri
         .add({ ...data, createdAt: Timestamp.now() });
     return ref.id;
 }
+
+export async function listContacts(): Promise<Record<string, unknown>[]> {
+    const snap = await db()
+        .collection("contacts")
+        .orderBy("createdAt", "desc")
+        .get();
+    return snap.docs.map((doc) => ({ id: doc.id, ...serializeDoc(doc.data()) }));
+}

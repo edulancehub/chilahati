@@ -12,9 +12,10 @@ interface MemberCardProps {
     role: string;
     phone: string;
     fb: string;
+    img: string;
 }
 
-function MemberCard({ name, role, phone, fb }: MemberCardProps) {
+function MemberCard({ name, role, phone, fb, img }: MemberCardProps) {
     return (
         <div
             style={{
@@ -25,21 +26,20 @@ function MemberCard({ name, role, phone, fb }: MemberCardProps) {
                 border: "1px solid #eee",
             }}
         >
-            <div
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+                src={img}
+                alt={name}
                 style={{
                     width: "120px",
                     height: "120px",
                     borderRadius: "50%",
-                    background: "#e8f4fd",
+                    objectFit: "cover",
                     margin: "0 auto 15px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    display: "block",
                     border: "3px solid #3498db",
                 }}
-            >
-                <i className="fas fa-user" style={{ fontSize: "2.8rem", color: "#3498db", opacity: 0.5 }}></i>
-            </div>
+            />
             <h4 style={{ margin: "10px 0 5px", fontSize: "1.15rem", color: "#2c3e50" }}>{name}</h4>
             <span style={{ color: "#3498db", fontWeight: 600, display: "block", marginBottom: "15px", fontSize: "0.9rem" }}>
                 {role}
@@ -135,17 +135,19 @@ function WorkColumn({ title, icon, items }: { title: string; icon: string; items
     );
 }
 
+const REPO = "https://raw.githubusercontent.com/mdfhf2020-ui/About-us/main";
+
 const founders = [
-    { name: "মোঃ আবু ফারহান", role: "প্রতিষ্ঠাতা", phone: "01717675512", fb: "https://www.facebook.com/abufarhan.farhan.5015" },
-    { name: "নাজমুস সাদাত সাফিন", role: "প্রতিষ্ঠাতা", phone: "01341285676", fb: "https://www.facebook.com/mdshafin.shafin.716" },
+    { name: "মোঃ আবু ফারহান", role: "প্রতিষ্ঠাতা", phone: "01717675512", fb: "https://www.facebook.com/abufarhan.farhan.5015", img: `${REPO}/farhan.jpg` },
+    { name: "নাজমুস সাদাত সাফিন", role: "প্রতিষ্ঠাতা", phone: "01341285676", fb: "https://www.facebook.com/mdshafin.shafin.716", img: `${REPO}/shafin.jpg` },
 ];
 const committee1 = [
-    { name: "কামিয়াব কানন", role: "সভাপতি (১ম কমিটি)", phone: "01402193372", fb: "https://www.facebook.com/ka.non.889819" },
-    { name: "নাফিস রেজা আরাফাত", role: "সাধারণ সম্পাদক (১ম কমিটি)", phone: "01306173731", fb: "https://www.facebook.com/nafisreza.arafat" },
+    { name: "কামিয়াব কানন", role: "সভাপতি (১ম কমিটি)", phone: "01402193372", fb: "https://www.facebook.com/ka.non.889819", img: `${REPO}/kanon.jpg` },
+    { name: "নাফিস রেজা আরাফাত", role: "সাধারণ সম্পাদক (১ম কমিটি)", phone: "01306173731", fb: "https://www.facebook.com/nafisreza.arafat", img: `${REPO}/nafis.jpg` },
 ];
 const committee2 = [
-    { name: "নাজমুস সাদাত সাফিন", role: "সভাপতি (২য় কমিটি)", phone: "01341285676", fb: "https://www.facebook.com/mdshafin.shafin.716" },
-    { name: "মোঃ ফারহান হাসিন ফাহিম", role: "সাধারণ সম্পাদক (২য় কমিটি)", phone: "01767207999", fb: "https://www.facebook.com/fhf2022" },
+    { name: "নাজমুস সাদাত সাফিন", role: "সভাপতি (২য় কমিটি)", phone: "01341285676", fb: "https://www.facebook.com/mdshafin.shafin.716", img: `${REPO}/shafin.jpg` },
+    { name: "মোঃ ফারহান হাসিন ফাহিম", role: "সাধারণ সম্পাদক (২য় কমিটি)", phone: "01767207999", fb: "https://www.facebook.com/fhf2022", img: `${REPO}/fahim.jpg` },
 ];
 
 const eduWorks: WorkItem[] = [
@@ -197,7 +199,8 @@ export default function AboutPage() {
                         overflow: "hidden",
                     }}
                 >
-                    <i className="fas fa-train" style={{ fontSize: "3rem", color: "#3498db" }}></i>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="https://raw.githubusercontent.com/mdfhf2020-ui/About-us/main/l.png" alt="স্বপ্নতরী লোগো" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 </div>
                 <h2 style={{ margin: "10px 0", fontSize: "2.4rem", fontWeight: 800, color: "#2c3e50" }}>
                     স্বপ্নতরী ফাউন্ডেশন
@@ -485,17 +488,7 @@ export default function AboutPage() {
                     <p style={{ fontSize: "0.85rem", margin: "5px 0", color: "#7f8c8d" }}>
                         &copy; 2026 <strong>স্বপ্নতরী ফাউন্ডেশন</strong>। সর্বস্বত্ব সংরক্ষিত।
                     </p>
-                    <p style={{ fontSize: "0.85rem", margin: "5px 0", color: "#7f8c8d" }}>
-                        Developed by{" "}
-                        <a
-                            href="https://www.facebook.com/fhf2022"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ color: "#3498db", fontWeight: 600, textDecoration: "none" }}
-                        >
-                            Farhan Hasin Fahim
-                        </a>
-                    </p>
+
                 </div>
             </div>
         </div>

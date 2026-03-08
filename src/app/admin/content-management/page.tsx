@@ -14,6 +14,14 @@ interface ContentItem {
     createdAt: string;
 }
 
+interface ContactItem {
+    id: string;
+    name: string;
+    email: string;
+    message: string;
+    createdAt: string;
+}
+
 interface SubmissionItem {
     _id: string;
     title: string;
@@ -38,6 +46,7 @@ export default function ContentManagementPage() {
     const { user } = useAuth();
     const [items, setItems] = useState<ContentItem[]>([]);
     const [submissions, setSubmissions] = useState<SubmissionItem[]>([]);
+    const [contacts, setContacts] = useState<ContactItem[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
@@ -45,6 +54,14 @@ export default function ContentManagementPage() {
     const [loading, setLoading] = useState(true);
     const [success, setSuccess] = useState("");
     const [error, setError] = useState("");
+
+    const fetchContacts = useCallback(async () => {
+        try {
+            const res = await fetch("/api/admin/contacts");
+            const data = await res.json();
+            if (res.ok) setContacts(data.contacts || []);
+        } catch { /* ignore */ }
+    }, []);
 
     const fetchSubmissions = useCallback(async () => {
         try {
@@ -79,7 +96,8 @@ export default function ContentManagementPage() {
     useEffect(() => {
         fetchItems(1, "");
         fetchSubmissions();
-    }, [fetchItems, fetchSubmissions]);
+        fetchContacts();
+    }, [fetchItems, fetchSubmissions, fetchContacts]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -238,6 +256,40 @@ export default function ContentManagementPage() {
                                         </button>
                                     </div>
                                 )}
+                            </div>
+                        ))
+                    )}
+                </div>
+            </section>
+
+            {/* ── Contact Form Submissions ── */}
+            <section className="management-list" style={{ marginBottom: "2rem" }}>
+                <div className="management-item" style={{ display: "block" }}>
+                    <div className="item-info" style={{ marginBottom: "1rem" }}>
+                        <h3><i className="fas fa-envelope"></i> Contact Form Messages</h3>
+                        <div className="item-meta">
+                            <span className="item-category">{contacts.length} total</span>
+                            <span>Messages sent via the Contact page</span>
+                        </div>
+                    </div>
+                    {contacts.length === 0 ? (
+                        <p style={{ opacity: 0.8 }}>No contact messages yet.</p>
+                    ) : (
+                        contacts.map((c) => (
+                            <div key={c.id} className="management-item" style={{ marginTop: "1rem" }}>
+                                <div className="item-info">
+                                    <h3>{c.name}</h3>
+                                    <div className="item-meta" style={{ flexWrap: "wrap" }}>
+                                        <span><i className="fas fa-envelope"></i> {c.email}</span>
+                                        <span><i className="far fa-calendar-alt"></i> {new Date(c.createdAt).toLocaleString()}</span>
+                                    </div>
+                                    <p style={{ marginTop: "0.75rem", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{c.message}</p>
+                                </div>
+                                <div className="item-actions">
+                                    <a href={`mailto:${c.email}`} className="action-btn btn-edit">
+                                        <i className="fas fa-reply"></i> Reply
+                                    </a>
+                                </div>
                             </div>
                         ))
                     )}
