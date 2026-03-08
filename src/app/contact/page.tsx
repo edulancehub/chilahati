@@ -4,7 +4,7 @@ import ContactPageContent from "./ContactPageContent";
 export const metadata: Metadata = {
     title: "Contact | Chilahati Archive",
     description:
-        "Get in touch with ????????? ????????? — a social and voluntary organisation from Chilahati, Domar, Nilphamari.",
+        "Get in touch with Swapnotori Foundation - a social and voluntary organisation from Chilahati, Domar, Nilphamari.",
 };
 
 export default function ContactPage() {

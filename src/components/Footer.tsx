@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
     return (
         <footer>
@@ -57,10 +59,10 @@ export default function Footer() {
                 <div>
                     <h4 className="footer-heading">দ্রুত লিঙ্ক</h4>
                     <ul className="footer-nav-list">
-                        <li><a href="/about" className="footer-link"><i className="fas fa-info-circle"></i> About Us</a></li>
-                        <li><a href="/contribute" className="footer-link"><i className="fas fa-paper-plane"></i> Contribute</a></li>
-                        <li><a href="/contact" className="footer-link"><i className="fas fa-envelope"></i> Contact</a></li>
-                        <li><a href="/archive/history" className="footer-link"><i className="fas fa-history"></i> History</a></li>
+                        <li><Link href="/about" className="footer-link"><i className="fas fa-info-circle"></i> About Us</Link></li>
+                        <li><Link href="/contribute" className="footer-link"><i className="fas fa-paper-plane"></i> Contribute</Link></li>
+                        <li><Link href="/contact" className="footer-link"><i className="fas fa-envelope"></i> Contact</Link></li>
+                        <li><Link href="/archive/history" className="footer-link"><i className="fas fa-history"></i> History</Link></li>
                     </ul>
                 </div>
             </div>
