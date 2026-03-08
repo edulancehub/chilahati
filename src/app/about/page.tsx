@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { listArchiveItemsByCategory } from "@/lib/firestore";
 
 export const metadata: Metadata = {
     title: "About Us | Chilahati Archive",
@@ -174,7 +173,6 @@ const socialWorks: WorkItem[] = [
 ];
 
 export default async function AboutPage() {
-    const moreEntries = await listArchiveItemsByCategory("more").catch(() => []);
     return (
         <div className="main-content" style={{ background: "#f8f9fa", minHeight: "100vh" }}>
             {/* ── Header ── */}
@@ -381,65 +379,6 @@ export default async function AboutPage() {
                     <WorkColumn title="সামাজিক ও সেবামূলক" icon="fa-hand-holding-heart" items={socialWorks} />
                 </div>
             </div>
-
-            {/* ── Dynamic "More" entries published by admin ── */}
-            {moreEntries.length > 0 && (
-                <div
-                    style={{
-                        maxWidth: "1100px",
-                        margin: "0 auto",
-                        padding: "40px 20px",
-                    }}
-                >
-                    <h2
-                        style={{
-                            textAlign: "center",
-                            marginBottom: "30px",
-                            color: "#2c3e50",
-                            fontSize: "1.8rem",
-                        }}
-                    >
-                        <i className="fas fa-newspaper" style={{ color: "#3498db", marginRight: "10px" }}></i>
-                        আরো জানুন
-                    </h2>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1.5rem" }}>
-                        {moreEntries.map((entry) => (
-                            <Link
-                                key={entry.slug}
-                                href={`/entry/${entry.slug}`}
-                                style={{
-                                    background: "#fff",
-                                    borderRadius: "12px",
-                                    overflow: "hidden",
-                                    boxShadow: "0 4px 15px rgba(0,0,0,0.06)",
-                                    textDecoration: "none",
-                                    color: "inherit",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    transition: "transform 0.2s, box-shadow 0.2s",
-                                }}
-                            >
-                                {entry.thumbnail && (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img
-                                        src={entry.thumbnail}
-                                        alt={entry.title}
-                                        style={{ width: "100%", height: "160px", objectFit: "cover" }}
-                                    />
-                                )}
-                                <div style={{ padding: "1.2rem" }}>
-                                    <h3 style={{ margin: "0 0 0.5rem", fontSize: "1.1rem", color: "#2c3e50" }}>
-                                        {entry.title}
-                                    </h3>
-                                    <span style={{ fontSize: "0.8rem", color: "#3498db" }}>
-                                        <i className="fas fa-arrow-right"></i> Read more
-                                    </span>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

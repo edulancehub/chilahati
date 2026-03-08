@@ -71,6 +71,8 @@ function LoginForm() {
                 setError("Your browser blocked the sign-in popup. Please allow popups for this site and try again.");
             } else if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") {
                 setError("Google sign-in was cancelled. Please try again.");
+            } else if (code === "auth/account-exists-with-different-credential") {
+                setError("An account with this email already exists. Please log in with your email and password instead.");
             } else {
                 const message = err instanceof Error ? err.message : "Google sign-in failed";
                 setError(message);

@@ -1,7 +1,7 @@
 import "server-only";
 
 import { Timestamp } from "firebase-admin/firestore";
-import { getUserByUid, getUserByUsername, upsertUser, UserRecord } from "@/lib/firestore";
+import { getUserByUid, getUserByEmail, getUserByUsername, upsertUser, UserRecord } from "@/lib/firestore";
 
 type AuthProvider = "password" | "google";
 
@@ -64,6 +64,22 @@ export async function syncFirebaseUser(
         if (input.emailVerified || input.provider === "google") updates.isVerified = true;
         await upsertUser(input.uid, updates);
         return { ...existing, ...updates, uid: input.uid } as UserRecord & { uid: string };
+    }
+
+    // Check if an account with this email already exists (e.g., email/password user signing in with Google)
+    const existingByEmail = await getUserByEmail(normalizedEmail);
+    if (existingByEmail) {
+        const mergedData: Record<string, unknown> = {
+            username: existingByEmail.username,
+            email: normalizedEmail,
+            role,
+            provider: input.provider,
+            avatarUrl: input.picture ?? existingByEmail.avatarUrl ?? null,
+            isVerified: true,
+            createdAt: existingByEmail.createdAt,
+        };
+        await upsertUser(input.uid, mergedData);
+        return { ...existingByEmail, ...mergedData, uid: input.uid } as UserRecord & { uid: string };
     }
 
     // New user — generate unique username

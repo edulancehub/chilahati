@@ -14,7 +14,7 @@ const categories = [
   { href: "/archive/transport", cls: "card-transport", icon: "fas fa-train", title: "Transport", desc: "Railways and roads connecting us." },
   { href: "/archive/emergency-services", cls: "card-emergency", icon: "fas fa-hand-holding-medical", title: "Emergency Services", desc: "Hospitals, Fire, and Police contacts." },
   { href: "/archive/social-works", cls: "card-social", icon: "fas fa-hands-helping", title: "Social Works", desc: "Charity and community welfare." },
-  { href: "/about", cls: "card-more", icon: "fas fa-ellipsis-h", title: "More", desc: "Learn about স্বপ্নতরী ফাউন্ডেশন & the Chilahati story." },
+  { href: "/archive/more", cls: "card-more", icon: "fas fa-ellipsis-h", title: "More", desc: "Additional stories, events & updates from স্বপ্নতরী ফাউন্ডেশন." },
 ];
 
 export default function Home() {

@@ -90,6 +90,13 @@ export async function getUserByUid(uid: string): Promise<UserRecord | null> {
     return { uid, ...serializeDoc(doc.data()!) } as UserRecord;
 }
 
+export async function getUserByEmail(email: string): Promise<UserRecord | null> {
+    const snap = await db().collection("users").where("email", "==", email).limit(1).get();
+    if (snap.empty) return null;
+    const doc = snap.docs[0];
+    return { uid: doc.id, ...serializeDoc(doc.data()) } as UserRecord;
+}
+
 export async function getUserByUsername(username: string): Promise<UserRecord | null> {
     const snap = await db().collection("users").where("username", "==", username).limit(1).get();
     if (snap.empty) return null;
