@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, authErrorResponse } from "@/lib/auth";
-import { getSubmission, updateSubmissionDoc, createArchiveItem } from "@/lib/firestore";
+import { getSubmission, updateSubmissionDoc, createArchiveItem, deleteSubmission } from "@/lib/firestore";
 import { generateUniqueArchiveSlug, textToParagraphHtml } from "@/lib/archive";
 import { Timestamp } from "firebase-admin/firestore";
 
@@ -77,5 +77,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         }
         console.error("Submission review error:", err);
         return NextResponse.json({ error: "Error reviewing submission" }, { status: 500 });
+    }
+}
+
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    try {
+        await requireAdmin();
+        const { id } = await params;
+        await deleteSubmission(id);
+        return NextResponse.json({ success: true });
+    } catch (err) {
+        return authErrorResponse(err);
     }
 }

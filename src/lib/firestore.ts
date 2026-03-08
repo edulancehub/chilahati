@@ -256,3 +256,7 @@ export async function listContacts(): Promise<Record<string, unknown>[]> {
         .get();
     return snap.docs.map((doc) => ({ id: doc.id, ...serializeDoc(doc.data()) }));
 }
+
+export async function deleteSubmission(id: string): Promise<void> {
+    await db().collection("submissions").doc(id).delete();
+}

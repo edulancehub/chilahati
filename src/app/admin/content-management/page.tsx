@@ -120,6 +120,17 @@ export default function ContentManagementPage() {
         } catch { setError("Network error"); }
     };
 
+    const deleteSubmission = async (submissionId: string) => {
+        if (!confirm("Delete this submission permanently? This cannot be undone.")) return;
+        try {
+            const res = await fetch(`/api/admin/submissions/${submissionId}`, { method: "DELETE" });
+            const data = await res.json();
+            if (!res.ok) { setError(data.error || "Delete failed"); return; }
+            setSuccess("Submission deleted.");
+            setSubmissions((prev) => prev.filter((s) => s._id !== submissionId));
+        } catch { setError("Network error"); }
+    };
+
     const reviewSubmission = async (submissionId: string, action: "approve" | "reject") => {
         const adminNotes = action === "reject"
             ? window.prompt("Optional rejection note for this contributor:", "") || ""
@@ -256,6 +267,11 @@ export default function ContentManagementPage() {
                                         </button>
                                     </div>
                                 )}
+                                <div className="item-actions" style={{ marginTop: submission.status === "pending" ? "0.5rem" : 0 }}>
+                                    <button onClick={() => deleteSubmission(submission._id)} className="action-btn btn-delete" title="Delete submission permanently">
+                                        <i className="fas fa-trash-alt"></i> Delete
+                                    </button>
+                                </div>
                             </div>
                         ))
                     )}

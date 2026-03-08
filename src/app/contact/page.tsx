@@ -10,7 +10,13 @@ export const metadata: Metadata = {
 export default function ContactPage() {
     return (
         <div className="main-content" style={{ padding: "60px 20px", minHeight: "100vh" }}>
-            <div style={{ maxWidth: "1000px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", alignItems: "start" }}>
+            <div style={{ maxWidth: "560px", margin: "0 auto" }}>
+                <ContactForm />
+            </div>
+        </div>
+    );
+}
+
 
                 {/* ── Foundation Info Card (left) ── */}
                 <div
