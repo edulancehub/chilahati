@@ -237,6 +237,13 @@ export async function listSubmissions(status?: string): Promise<SubmissionRecord
     return docs;
 }
 
+export async function listSubmissionsByUser(uid: string): Promise<SubmissionRecord[]> {
+    const snap = await db().collection("submissions").where("submittedBy", "==", uid).get();
+    return snap.docs
+        .map((d) => ({ id: d.id, ...serializeDoc(d.data()) } as SubmissionRecord))
+        .sort((a, b) => (b.createdAt as string) > (a.createdAt as string) ? 1 : -1);
+}
+
 export async function getSubmission(id: string): Promise<SubmissionRecord | null> {
     const doc = await db().collection("submissions").doc(id).get();
     if (!doc.exists) return null;

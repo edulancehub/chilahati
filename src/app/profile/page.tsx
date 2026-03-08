@@ -1,19 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import FlashMessage from "@/components/FlashMessage";
 import { getFirebaseClientAuth } from "@/lib/firebase/client";
 import { sendPasswordResetEmail } from "firebase/auth";
 
+interface MySubmission {
+    id: string;
+    title: string;
+    category: string;
+    status: "pending" | "approved" | "rejected";
+    createdAt: string;
+    adminNotes?: string;
+    publishedSlug?: string;
+}
+
 export default function ProfilePage() {
     const { user, refresh } = useAuth();
 
     const [newUsername, setNewUsername] = useState("");
+    const [mySubmissions, setMySubmissions] = useState<MySubmission[]>([]);
+    const [submissionsLoaded, setSubmissionsLoaded] = useState(false);
 
     const [success, setSuccess] = useState("");
     const [error, setError] = useState("");
+
+    useEffect(() => {
+        if (!user) return;
+        fetch("/api/user/submissions")
+            .then((r) => r.json())
+            .then((d) => { if (d.submissions) setMySubmissions(d.submissions); })
+            .catch(() => {})
+            .finally(() => setSubmissionsLoaded(true));
+    }, [user]);
 
     if (!user) {
         return (
@@ -118,6 +139,62 @@ export default function ProfilePage() {
                         <button type="button" className="btn-secondary" onClick={handleForgotPassword}>
                             <i className="fas fa-envelope"></i> Send Password Reset Email
                         </button>
+                    </div>
+
+                    {/* My Contributions */}
+                    <div className="info-section" style={{ marginTop: "2rem" }}>
+                        <h2><i className="fas fa-hand-holding-heart"></i> My Contributions</h2>
+                        {!submissionsLoaded ? (
+                            <p style={{ color: "#888" }}><i className="fas fa-spinner fa-spin"></i> Loading…</p>
+                        ) : mySubmissions.length === 0 ? (
+                            <p style={{ color: "#888" }}>
+                                You have not submitted any contributions yet.{" "}
+                                <Link href="/contribute" style={{ color: "#4a90e2" }}>Contribute now</Link>
+                            </p>
+                        ) : (
+                            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "0.75rem" }}>
+                                {mySubmissions.map((sub) => (
+                                    <div key={sub.id} style={{
+                                        background: "rgba(0,0,0,0.06)", borderRadius: "10px",
+                                        padding: "1rem 1.2rem", border: "1px solid rgba(0,0,0,0.08)",
+                                    }}>
+                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.5rem" }}>
+                                            <strong style={{ fontSize: "1rem" }}>{sub.title}</strong>
+                                            <span style={{
+                                                fontSize: "0.8rem", fontWeight: 700, padding: "2px 10px",
+                                                borderRadius: "20px", textTransform: "capitalize",
+                                                background: sub.status === "pending" ? "#fef3c7" : sub.status === "approved" ? "#d1fae5" : "#fee2e2",
+                                                color: sub.status === "pending" ? "#92400e" : sub.status === "approved" ? "#065f46" : "#991b1b",
+                                            }}>
+                                                {sub.status === "pending" && <><i className="fas fa-clock"></i> </>}
+                                                {sub.status === "approved" && <><i className="fas fa-check-circle"></i> </>}
+                                                {sub.status === "rejected" && <><i className="fas fa-times-circle"></i> </>}
+                                                {sub.status}
+                                            </span>
+                                        </div>
+                                        <div style={{ fontSize: "0.82rem", color: "#888", marginTop: "0.3rem" }}>
+                                            {sub.category} &bull; {new Date(sub.createdAt).toLocaleDateString()}
+                                        </div>
+                                        {sub.adminNotes && (
+                                            <div style={{
+                                                marginTop: "0.65rem", padding: "0.55rem 0.9rem",
+                                                background: "rgba(74,144,226,0.08)", borderLeft: "3px solid #4a90e2",
+                                                borderRadius: "0 6px 6px 0", fontSize: "0.88rem", lineHeight: 1.6,
+                                            }}>
+                                                <strong><i className="fas fa-comment-alt" style={{ color: "#4a90e2", marginRight: "5px" }}></i>Note from admin:</strong> {sub.adminNotes}
+                                            </div>
+                                        )}
+                                        {sub.publishedSlug && (
+                                            <div style={{ marginTop: "0.5rem" }}>
+                                                <Link href={`/entry/${sub.publishedSlug}`} style={{ color: "#4a90e2", fontSize: "0.88rem" }}>
+                                                    <i className="fas fa-external-link-alt"></i> View published entry
+                                                </Link>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -43,6 +43,7 @@ export default function ContentManagementPage() {
     const [items, setItems] = useState<ContentItem[]>([]);
     const [submissions, setSubmissions] = useState<SubmissionItem[]>([]);
     const [contacts, setContacts] = useState<ContactItem[]>([]);
+    const [noteMap, setNoteMap] = useState<Record<string, string>>({});
     const [searchQuery, setSearchQuery] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
@@ -139,9 +140,7 @@ export default function ContentManagementPage() {
     };
 
     const reviewSubmission = async (submissionId: string, action: "approve" | "reject") => {
-        const adminNotes = action === "reject"
-            ? window.prompt("Optional rejection note for this contributor:", "") || ""
-            : "";
+        const adminNotes = (noteMap[submissionId] || "").trim();
 
         try {
             const res = await fetch(`/api/admin/submissions/${submissionId}`, {
@@ -270,20 +269,39 @@ export default function ContentManagementPage() {
                                 </div>
 
                                 {submission.status === "pending" && (
-                                    <div className="item-actions">
-                                        <button onClick={() => reviewSubmission(submission.id, "approve")} className="action-btn btn-edit" title="Approve and publish">
-                                            <i className="fas fa-check"></i> Approve
-                                        </button>
-                                        <button onClick={() => reviewSubmission(submission.id, "reject")} className="action-btn btn-delete" title="Reject submission">
-                                            <i className="fas fa-times"></i> Reject
+                                    <div style={{ width: "100%", marginTop: "1rem" }}>
+                                        <textarea
+                                            placeholder="Optional note to the contributor (visible to them after review)..."
+                                            value={noteMap[submission.id] || ""}
+                                            onChange={(e) => setNoteMap((prev) => ({ ...prev, [submission.id]: e.target.value }))}
+                                            rows={2}
+                                            style={{
+                                                width: "100%", padding: "0.6rem 0.9rem", borderRadius: "8px",
+                                                border: "1px solid rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.08)",
+                                                color: "inherit", fontSize: "0.88rem", resize: "vertical", outline: "none",
+                                                boxSizing: "border-box",
+                                            }}
+                                        />
+                                        <div className="item-actions" style={{ marginTop: "0.5rem" }}>
+                                            <button onClick={() => reviewSubmission(submission.id, "approve")} className="action-btn btn-edit" title="Approve and publish">
+                                                <i className="fas fa-check"></i> Approve
+                                            </button>
+                                            <button onClick={() => reviewSubmission(submission.id, "reject")} className="action-btn btn-delete" title="Reject submission">
+                                                <i className="fas fa-times"></i> Reject
+                                            </button>
+                                            <button onClick={() => deleteSubmission(submission.id)} className="action-btn btn-delete" title="Delete submission permanently">
+                                                <i className="fas fa-trash-alt"></i> Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                                {submission.status !== "pending" && (
+                                    <div className="item-actions" style={{ marginTop: "0.5rem" }}>
+                                        <button onClick={() => deleteSubmission(submission.id)} className="action-btn btn-delete" title="Delete submission permanently">
+                                            <i className="fas fa-trash-alt"></i> Delete
                                         </button>
                                     </div>
                                 )}
-                                <div className="item-actions" style={{ marginTop: submission.status === "pending" ? "0.5rem" : 0 }}>
-                                    <button onClick={() => deleteSubmission(submission.id)} className="action-btn btn-delete" title="Delete submission permanently">
-                                        <i className="fas fa-trash-alt"></i> Delete
-                                    </button>
-                                </div>
                             </div>
                         ))
                     )}

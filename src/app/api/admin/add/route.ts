@@ -5,7 +5,7 @@ import { createArchiveItem, slugExists } from "@/lib/firestore";
 const VALID_CATEGORIES = new Set([
     "history", "culture", "institution", "notable people", "freedom fighters",
     "meritorious student", "hidden talent", "occupation", "Heartbreaking stories",
-    "tourist spots", "transport", "Emergency services", "social works",
+    "tourist spots", "transport", "Emergency services", "social works", "more",
 ]);
 
 export async function POST(req: NextRequest) {
