@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import FlashMessage from "@/components/FlashMessage";
 
 interface ContentItem {
-    _id: string;
+    id: string;
     title: string;
     slug: string;
     category: string;
@@ -23,7 +23,7 @@ interface ContactItem {
 }
 
 interface SubmissionItem {
-    _id: string;
+    id: string;
     title: string;
     category: string;
     subType?: string;
@@ -32,14 +32,10 @@ interface SubmissionItem {
     status: "pending" | "approved" | "rejected";
     createdAt: string;
     adminNotes?: string;
-    submittedBy?: {
-        username?: string;
-        email?: string;
-    };
-    publishedEntry?: {
-        slug: string;
-        title: string;
-    };
+    submitterName?: string;
+    submitterEmail?: string;
+    submittedBy?: string;
+    publishedSlug?: string;
 }
 
 export default function ContentManagementPage() {
@@ -116,7 +112,7 @@ export default function ContentManagementPage() {
             const data = await res.json();
             if (!res.ok) { setError(data.error || "Delete failed"); return; }
             setSuccess("Content deleted successfully");
-            setItems((prev) => prev.filter((i) => i._id !== itemId));
+            setItems((prev) => prev.filter((i) => i.id !== itemId));
         } catch { setError("Network error"); }
     };
 
@@ -127,7 +123,18 @@ export default function ContentManagementPage() {
             const data = await res.json();
             if (!res.ok) { setError(data.error || "Delete failed"); return; }
             setSuccess("Submission deleted.");
-            setSubmissions((prev) => prev.filter((s) => s._id !== submissionId));
+            setSubmissions((prev) => prev.filter((s) => s.id !== submissionId));
+        } catch { setError("Network error"); }
+    };
+
+    const deleteContact = async (contactId: string) => {
+        if (!confirm("Delete this contact message permanently?")) return;
+        try {
+            const res = await fetch(`/api/admin/contacts/${contactId}`, { method: "DELETE" });
+            const data = await res.json();
+            if (!res.ok) { setError(data.error || "Delete failed"); return; }
+            setSuccess("Contact message deleted.");
+            setContacts((prev) => prev.filter((c) => c.id !== contactId));
         } catch { setError("Network error"); }
     };
 
@@ -191,7 +198,7 @@ export default function ContentManagementPage() {
                     <form onSubmit={handleSearch} style={{ display: "flex", gap: "0.5rem" }}>
                         <input
                             type="text"
-                            placeholder="Search your entries by title, category, etc..."
+                            placeholder="Search all entries by title, category, etc..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             style={{
@@ -226,16 +233,20 @@ export default function ContentManagementPage() {
                         <p style={{ opacity: 0.8 }}>No community submissions yet.</p>
                     ) : (
                         submissions.map((submission) => (
-                            <div key={submission._id} className="management-item" style={{ marginTop: "1rem" }}>
+                            <div key={submission.id} className="management-item" style={{ marginTop: "1rem" }}>
                                 <div className="item-info">
                                     <h3>{submission.title}</h3>
                                     <div className="item-meta" style={{ flexWrap: "wrap" }}>
                                         <span className="item-category">{submission.category}</span>
                                         {submission.subType && <span><i className="fas fa-tag"></i> {submission.subType}</span>}
-                                        <span><i className="fas fa-user"></i> {submission.submittedBy?.username || "Unknown contributor"}</span>
-                                        <span><i className="fas fa-envelope"></i> {submission.submittedBy?.email || "No email"}</span>
+                                        <span><i className="fas fa-user"></i> {submission.submitterName || "Unknown contributor"}</span>
+                                        <span><i className="fas fa-envelope"></i> {submission.submitterEmail || "No email"}</span>
                                         <span><i className="far fa-calendar-alt"></i> {new Date(submission.createdAt).toLocaleDateString()}</span>
-                                        <span style={{ textTransform: "capitalize" }}><i className="fas fa-flag"></i> {submission.status}</span>
+                                        <span style={{
+                                            textTransform: "capitalize",
+                                            fontWeight: 700,
+                                            color: submission.status === "pending" ? "#f59e0b" : submission.status === "approved" ? "#22c55e" : "#ef4444",
+                                        }}><i className="fas fa-flag"></i> {submission.status}</span>
                                     </div>
                                     <p style={{ marginTop: "0.85rem", lineHeight: 1.6 }}>{submission.message}</p>
                                     {submission.sourceLink && (
@@ -245,9 +256,10 @@ export default function ContentManagementPage() {
                                             </a>
                                         </p>
                                     )}
-                                    {submission.publishedEntry && (
+                                    {submission.publishedSlug && (
                                         <p style={{ marginTop: "0.65rem" }}>
-                                            Published as <Link href={`/entry/${submission.publishedEntry.slug}`} target="_blank">{submission.publishedEntry.title}</Link>
+                                            <i className="fas fa-check-circle" style={{ color: "#22c55e", marginRight: "6px" }}></i>
+                                            Published: <Link href={`/entry/${submission.publishedSlug}`} target="_blank">{submission.title}</Link>
                                         </p>
                                     )}
                                     {submission.adminNotes && (
@@ -259,16 +271,16 @@ export default function ContentManagementPage() {
 
                                 {submission.status === "pending" && (
                                     <div className="item-actions">
-                                        <button onClick={() => reviewSubmission(submission._id, "approve")} className="action-btn btn-edit" title="Approve and publish">
+                                        <button onClick={() => reviewSubmission(submission.id, "approve")} className="action-btn btn-edit" title="Approve and publish">
                                             <i className="fas fa-check"></i> Approve
                                         </button>
-                                        <button onClick={() => reviewSubmission(submission._id, "reject")} className="action-btn btn-delete" title="Reject submission">
+                                        <button onClick={() => reviewSubmission(submission.id, "reject")} className="action-btn btn-delete" title="Reject submission">
                                             <i className="fas fa-times"></i> Reject
                                         </button>
                                     </div>
                                 )}
                                 <div className="item-actions" style={{ marginTop: submission.status === "pending" ? "0.5rem" : 0 }}>
-                                    <button onClick={() => deleteSubmission(submission._id)} className="action-btn btn-delete" title="Delete submission permanently">
+                                    <button onClick={() => deleteSubmission(submission.id)} className="action-btn btn-delete" title="Delete submission permanently">
                                         <i className="fas fa-trash-alt"></i> Delete
                                     </button>
                                 </div>
@@ -305,6 +317,9 @@ export default function ContentManagementPage() {
                                     <a href={`mailto:${c.email}`} className="action-btn btn-edit">
                                         <i className="fas fa-reply"></i> Reply
                                     </a>
+                                    <button onClick={() => deleteContact(c.id)} className="action-btn btn-delete" title="Delete message">
+                                        <i className="fas fa-trash-alt"></i> Delete
+                                    </button>
                                 </div>
                             </div>
                         ))
@@ -329,6 +344,11 @@ export default function ContentManagementPage() {
                 </div>
             )}
 
+            <div style={{ marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                <h3 style={{ margin: 0 }}><i className="fas fa-book-open" style={{ color: "#4a90e2" }}></i> Published Archive Entries</h3>
+                {totalItems > 0 && <span className="item-category">{totalItems} total</span>}
+            </div>
+
             <div className="management-list">
                 {loading ? (
                     <div style={{ textAlign: "center", padding: "3rem" }}>
@@ -336,7 +356,7 @@ export default function ContentManagementPage() {
                     </div>
                 ) : items.length > 0 ? (
                     items.map((item) => (
-                        <div key={item._id} className="management-item" id={`item-${item._id}`}>
+                        <div key={item.id} className="management-item" id={`item-${item.id}`}>
                             <div className="item-info">
                                 <h3>{item.title}</h3>
                                 <div className="item-meta">
@@ -349,10 +369,10 @@ export default function ContentManagementPage() {
                                 <Link href={`/entry/${item.slug}`} target="_blank" className="action-btn btn-view" title="View Entry">
                                     <i className="fas fa-eye"></i> View
                                 </Link>
-                                <Link href={`/admin/edit/${item._id}`} className="action-btn btn-edit" title="Edit Entry">
+                                <Link href={`/admin/edit/${item.slug}`} className="action-btn btn-edit" title="Edit Entry">
                                     <i className="fas fa-edit"></i> Edit
                                 </Link>
-                                <button onClick={() => deleteItem(item._id)} className="action-btn btn-delete" title="Delete Entry">
+                                <button onClick={() => deleteItem(item.slug)} className="action-btn btn-delete" title="Delete Entry">
                                     <i className="fas fa-trash-alt"></i> Delete
                                 </button>
                             </div>

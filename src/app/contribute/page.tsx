@@ -79,7 +79,26 @@ export default function ContributePage() {
             <div className="contribute-card">
                 <div className="contribute-header">
                     <h2><i className="fas fa-hand-holding-heart"></i> Contribute</h2>
-                    <p>Share a story or reference with the archive team. Community submissions stay private until an admin approves and publishes them.</p>
+                    <p>Share a story, name, or reference with the archive team.</p>
+                </div>
+
+                {/* Process note */}
+                <div style={{
+                    background: "rgba(74,144,226,0.08)",
+                    border: "1px solid rgba(74,144,226,0.25)",
+                    borderRadius: "10px",
+                    padding: "14px 18px",
+                    marginBottom: "1.5rem",
+                    fontSize: "0.9rem",
+                    lineHeight: 1.7,
+                }}>
+                    <p style={{ margin: "0 0 6px", fontWeight: 600 }}><i className="fas fa-info-circle" style={{ color: "#4a90e2", marginRight: "6px" }}></i>How it works</p>
+                    <ul style={{ margin: 0, paddingLeft: "1.2rem" }}>
+                        <li>Fill in the form with your information or reference.</li>
+                        <li>Your submission goes to the admin for review — it is <strong>not public</strong> until approved.</li>
+                        <li>Once approved, it will appear as a published archive entry on the website.</li>
+                        <li>If rejected, you will see a note from the admin explaining why.</li>
+                    </ul>
                 </div>
 
                 <FlashMessage type="success" message={success} />

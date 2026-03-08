@@ -260,3 +260,7 @@ export async function listContacts(): Promise<Record<string, unknown>[]> {
 export async function deleteSubmission(id: string): Promise<void> {
     await db().collection("submissions").doc(id).delete();
 }
+
+export async function deleteContact(id: string): Promise<void> {
+    await db().collection("contacts").doc(id).delete();
+}
