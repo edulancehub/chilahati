@@ -34,6 +34,25 @@ export default function ContributePage() {
         );
     }
 
+    if (user.role === "admin") {
+        return (
+            <div className="auth-container">
+                <div className="auth-card">
+                    <h2><i className="fas fa-shield-alt"></i> Admin Panel</h2>
+                    <p style={{ color: "rgba(255,255,255,0.7)", marginTop: "0.75rem" }}>
+                        আপনি এডমিন। কমিউনিটি সাবমিশন রিভিউ ও পাবলিশ করতে Admin Panel-এ যান।
+                    </p>
+                    <Link href="/admin/content-management" className="btn-block" style={{ marginTop: "1.25rem" }}>
+                        <i className="fas fa-tasks"></i> Review Submissions
+                    </Link>
+                    <Link href="/admin/add" className="btn-block" style={{ marginTop: "0.75rem", background: "rgba(255,255,255,0.15)" }}>
+                        <i className="fas fa-plus-circle"></i> Add New Entry
+                    </Link>
+                </div>
+            </div>
+        );
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(""); setSuccess(""); setLoading(true);

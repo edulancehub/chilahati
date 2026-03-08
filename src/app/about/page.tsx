@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { listArchiveItemsByCategory } from "@/lib/firestore";
 
 export const metadata: Metadata = {
     title: "About Us | Chilahati Archive",
@@ -172,7 +173,8 @@ const socialWorks: WorkItem[] = [
     { icon: "fa-mitten", label: "শীতার্তদের কম্বল বিতরণ", href: "https://www.facebook.com/share/p/17zqk4xPfy/" },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+    const moreEntries = await listArchiveItemsByCategory("more").catch(() => []);
     return (
         <div className="main-content" style={{ background: "#f8f9fa", minHeight: "100vh" }}>
             {/* ── Header ── */}
@@ -380,117 +382,64 @@ export default function AboutPage() {
                 </div>
             </div>
 
-            {/* ── Footer section ── */}
-            <div
-                style={{
-                    background: "#1a252f",
-                    color: "#ecf0f1",
-                    padding: "60px 20px 20px",
-                    borderTop: "6px solid #3498db",
-                }}
-            >
+            {/* ── Dynamic "More" entries published by admin ── */}
+            {moreEntries.length > 0 && (
                 <div
                     style={{
                         maxWidth: "1100px",
                         margin: "0 auto",
-                        display: "grid",
-                        gridTemplateColumns: "1.2fr 1fr",
-                        gap: "60px",
+                        padding: "40px 20px",
                     }}
                 >
-                    <div>
-                        <h3 style={{ color: "#3498db", fontSize: "1.4rem", marginBottom: "20px" }}>
-                            স্বপ্নতরী ফাউন্ডেশন
-                        </h3>
-                        <p style={{ fontSize: "0.95rem", lineHeight: 1.8, color: "#bdc3c7" }}>
-                            স্বপ্নতরী ফাউন্ডেশন এসএসসি ২০২০ ব্যাচের উদ্যোগে গড়ে ওঠা একটি সামাজিক, স্বেচ্ছাসেবী ও
-                            সম্পূর্ণ অরাজনৈতিক সংগঠন। বর্তমানে বিভিন্ন ব্যাচের অংশগ্রহণে এটি একটি বৃহৎ মানবিক
-                            প্ল্যাটফর্মে পরিণত হয়েছে।
-                        </p>
-                        <div style={{ marginTop: "25px", display: "flex", gap: "12px" }}>
-                            {[
-                                { href: "https://www.facebook.com/sopnotorifoundationchilahati", icon: "fa-brands fa-facebook-f" },
-                                { href: "https://wa.me/8801717675512", icon: "fa-brands fa-whatsapp" },
-                                { href: "mailto:sopnotory26@gmail.com", icon: "fa-solid fa-envelope" },
-                            ].map((s) => (
-                                <a
-                                    key={s.href}
-                                    href={s.href}
-                                    target={s.href.startsWith("mailto") ? undefined : "_blank"}
-                                    rel="noopener noreferrer"
-                                    style={{
-                                        width: "44px",
-                                        height: "44px",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        borderRadius: "12px",
-                                        color: "white",
-                                        fontSize: "1.2rem",
-                                        background: "rgba(255,255,255,0.05)",
-                                        border: "1px solid rgba(255,255,255,0.1)",
-                                        textDecoration: "none",
-                                    }}
-                                >
-                                    <i className={s.icon}></i>
-                                </a>
-                            ))}
-                        </div>
-                    </div>
-                    <div>
-                        <h3 style={{ color: "#3498db", fontSize: "1.4rem", marginBottom: "20px" }}>যোগাযোগঃ</h3>
-                        <ul style={{ listStyle: "none", padding: 0 }}>
-                            <li
+                    <h2
+                        style={{
+                            textAlign: "center",
+                            marginBottom: "30px",
+                            color: "#2c3e50",
+                            fontSize: "1.8rem",
+                        }}
+                    >
+                        <i className="fas fa-newspaper" style={{ color: "#3498db", marginRight: "10px" }}></i>
+                        আরো জানুন
+                    </h2>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1.5rem" }}>
+                        {moreEntries.map((entry) => (
+                            <Link
+                                key={entry.slug}
+                                href={`/entry/${entry.slug}`}
                                 style={{
+                                    background: "#fff",
+                                    borderRadius: "12px",
+                                    overflow: "hidden",
+                                    boxShadow: "0 4px 15px rgba(0,0,0,0.06)",
+                                    textDecoration: "none",
+                                    color: "inherit",
                                     display: "flex",
-                                    alignItems: "flex-start",
-                                    gap: "12px",
-                                    color: "#bdc3c7",
-                                    marginBottom: "12px",
-                                    fontSize: "0.9rem",
+                                    flexDirection: "column",
+                                    transition: "transform 0.2s, box-shadow 0.2s",
                                 }}
                             >
-                                <i className="fa-solid fa-location-dot" style={{ color: "#3498db", marginTop: "4px" }}></i>
-                                চিলাহাটি, ডোমার, নীলফামারী, বাংলাদেশ।
-                            </li>
-                            <li
-                                style={{
-                                    display: "flex",
-                                    alignItems: "flex-start",
-                                    gap: "12px",
-                                    color: "#bdc3c7",
-                                    fontSize: "0.9rem",
-                                }}
-                            >
-                                <i className="fa-solid fa-phone" style={{ color: "#3498db", marginTop: "4px" }}></i>
-                                <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                                    <span>০১৭১৭-৬৭৫৫১২ (ফারহান)</span>
-                                    <span>০১৩৪১-২৮৫৬৭৬ (সাফিন)</span>
-                                    <span>০১৭৬৭-২০৭৯৯৯ (ফাহিম)</span>
+                                {entry.thumbnail && (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img
+                                        src={entry.thumbnail}
+                                        alt={entry.title}
+                                        style={{ width: "100%", height: "160px", objectFit: "cover" }}
+                                    />
+                                )}
+                                <div style={{ padding: "1.2rem" }}>
+                                    <h3 style={{ margin: "0 0 0.5rem", fontSize: "1.1rem", color: "#2c3e50" }}>
+                                        {entry.title}
+                                    </h3>
+                                    <span style={{ fontSize: "0.8rem", color: "#3498db" }}>
+                                        <i className="fas fa-arrow-right"></i> Read more
+                                    </span>
                                 </div>
-                            </li>
-                        </ul>
-                        <div style={{ marginTop: "20px" }}>
-                            <Link href="/contact" style={{ color: "#3498db", textDecoration: "none", fontWeight: 600 }}>
-                                <i className="fas fa-envelope"></i> Contact us →
                             </Link>
-                        </div>
+                        ))}
                     </div>
                 </div>
-                <div
-                    style={{
-                        marginTop: "50px",
-                        paddingTop: "25px",
-                        borderTop: "1px solid rgba(255,255,255,0.1)",
-                        textAlign: "center",
-                    }}
-                >
-                    <p style={{ fontSize: "0.85rem", margin: "5px 0", color: "#7f8c8d" }}>
-                        &copy; 2026 <strong>স্বপ্নতরী ফাউন্ডেশন</strong>। সর্বস্বত্ব সংরক্ষিত।
-                    </p>
-
-                </div>
-            </div>
+            )}
         </div>
     );
 }

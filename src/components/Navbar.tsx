@@ -142,6 +142,21 @@ export default function Navbar() {
                                     <i className="fas fa-plus-circle"></i> Add Content
                                 </Link>
                             )}
+                            {isAdmin && (
+                                <Link
+                                    href="/admin/content-management"
+                                    style={{
+                                        display: "inline-flex", alignItems: "center", gap: "6px",
+                                        padding: "0.45rem 1rem", borderRadius: "20px",
+                                        background: "rgba(255,193,7,0.18)", color: "#ffda79",
+                                        border: "1px solid rgba(255,193,7,0.35)",
+                                        fontWeight: 700, fontSize: "0.9rem", textDecoration: "none",
+                                        transition: "background 0.2s",
+                                    }}
+                                >
+                                    <i className="fas fa-shield-alt"></i> Admin Panel
+                                </Link>
+                            )}
 
                             {isAdmin ? (
                                 <div className={`dropdown ${userOpen ? "active" : ""}`} ref={userRef}>
@@ -151,6 +166,7 @@ export default function Navbar() {
                                     <div className="dropdown-menu">
                                         <Link href="/profile" className="dropdown-item"><i className="fas fa-user"></i> Profile</Link>
                                         <Link href="/admin/content-management" className="dropdown-item"><i className="fas fa-file-alt"></i> Content Management</Link>
+                                        <Link href="/admin/add" className="dropdown-item"><i className="fas fa-plus-circle"></i> Add New Entry</Link>
                                     </div>
                                 </div>
                             ) : (
@@ -225,8 +241,8 @@ export default function Navbar() {
                         </Link>
                     )}
                     {isAdmin && (
-                        <Link href="/admin/content-management" className="mobile-nav-item" onClick={closeMobile}>
-                            <i className="fas fa-file-alt"></i> Content Management
+                        <Link href="/admin/content-management" className="mobile-nav-item" onClick={closeMobile} style={{ color: "#ffda79", fontWeight: 700 }}>
+                            <i className="fas fa-shield-alt"></i> Admin Panel
                         </Link>
                     )}
                 </div>

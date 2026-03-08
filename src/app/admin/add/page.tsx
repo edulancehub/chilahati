@@ -182,6 +182,7 @@ export default function AdminAddPage() {
                                 <option value="transport">Transport</option>
                                 <option value="Emergency services">Emergency Services</option>
                                 <option value="social works">Social Works</option>
+                                <option value="more">More (Foundation / About)</option>
                             </select>
                         </div>
 

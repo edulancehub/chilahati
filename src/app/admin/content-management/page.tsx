@@ -185,8 +185,8 @@ export default function ContentManagementPage() {
     return (
         <div className="admin-container">
             <header className="admin-header">
-                <h1><i className="fas fa-file-alt"></i> Content Management</h1>
-                <p>Manage the entries you have contributed to the archive.</p>
+                <h1><i className="fas fa-shield-alt"></i> Admin Panel</h1>
+                <p>Review submissions, manage all archive entries, and view contact messages.</p>
                 <div style={{ marginTop: "1.5rem", maxWidth: "500px" }}>
                     <form onSubmit={handleSearch} style={{ display: "flex", gap: "0.5rem" }}>
                         <input
