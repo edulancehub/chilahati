@@ -19,10 +19,11 @@ function MemberCard({ name, role, phone, fb, img }: MemberCardProps) {
         <div
             style={{
                 background: "#f9fbfc",
-                padding: "25px",
+                padding: "clamp(16px, 3vw, 25px)",
                 borderRadius: "20px",
                 textAlign: "center",
                 border: "1px solid #eee",
+                minWidth: 0,
             }}
         >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -201,7 +202,7 @@ export default async function AboutPage() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="https://raw.githubusercontent.com/mdfhf2020-ui/About-us/main/l.png" alt="স্বপ্নতরী লোগো" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 </div>
-                <h2 style={{ margin: "10px 0", fontSize: "2.4rem", fontWeight: 800, color: "#2c3e50" }}>
+                <h2 style={{ margin: "10px 0", fontSize: "clamp(1.6rem, 7vw, 2.4rem)", fontWeight: 800, color: "#2c3e50", lineHeight: 1.25 }}>
                     স্বপ্নতরী ফাউন্ডেশন
                 </h2>
                 <p style={{ margin: 0, fontSize: "1.2rem", color: "#3498db", fontWeight: 600 }}>
@@ -231,6 +232,7 @@ export default async function AboutPage() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
+                        flexWrap: "wrap",
                         gap: "8px",
                     }}
                 >
@@ -248,19 +250,19 @@ export default async function AboutPage() {
                     textAlign: "center",
                 }}
             >
-                <h1 style={{ fontSize: "2.5rem", marginBottom: "25px", fontWeight: 700 }}>আমরা—</h1>
+                <h1 style={{ fontSize: "clamp(1.7rem, 6vw, 2.5rem)", marginBottom: "25px", fontWeight: 700 }}>আমরা—</h1>
                 <div
                     style={{
                         background: "rgba(255,255,255,0.15)",
                         backdropFilter: "blur(8px)",
-                        padding: "25px 40px",
+                        padding: "clamp(16px, 4vw, 25px) clamp(18px, 6vw, 40px)",
                         borderRadius: "20px",
                         display: "inline-block",
                         border: "1px solid rgba(255,255,255,0.3)",
                         boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
                     }}
                 >
-                    <p style={{ fontSize: "1.3rem", fontWeight: 500, margin: 0, fontStyle: "italic" }}>
+                    <p style={{ fontSize: "clamp(1rem, 3.8vw, 1.3rem)", fontWeight: 500, margin: 0, fontStyle: "italic" }}>
                         স্বপ্ন দেখি, স্বপ্ন দেখাবো, স্বপ্নের পৃথিবী আমরাই গড়বো
                     </p>
                 </div>
@@ -270,18 +272,20 @@ export default async function AboutPage() {
             <div
                 style={{
                     maxWidth: "1100px",
-                    margin: "-50px auto 40px",
+                    margin: "-40px auto 40px",
                     background: "white",
-                    padding: "40px",
-                    borderRadius: "25px",
+                    padding: "clamp(16px, 4vw, 40px)",
+                    borderRadius: "clamp(14px, 3vw, 25px)",
                     boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
+                    width: "min(1100px, 100%)",
+                    overflow: "hidden",
                 }}
             >
                 {/* Stats */}
                 <div
                     style={{
                         display: "grid",
-                        gridTemplateColumns: "1fr 1fr",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
                         gap: "25px",
                         marginBottom: "50px",
                     }}
@@ -305,7 +309,7 @@ export default async function AboutPage() {
                                 style={{ fontSize: "2.5rem", color: "#3498db", marginBottom: "15px", display: "block" }}
                             ></i>
                             <h3 style={{ color: "#2c3e50" }}>{stat.title}</h3>
-                            <p>{stat.body}</p>
+                            <p style={{ color: "#2c3e50" }}>{stat.body}</p>
                         </div>
                     ))}
                 </div>
@@ -315,7 +319,7 @@ export default async function AboutPage() {
                     style={{
                         textAlign: "center",
                         margin: "0 0 25px",
-                        fontSize: "1.7rem",
+                        fontSize: "clamp(1.25rem, 5.2vw, 1.7rem)",
                         color: "#2c3e50",
                         borderBottom: "2px solid #3498db",
                         paddingBottom: "10px",
@@ -323,7 +327,7 @@ export default async function AboutPage() {
                 >
                     সম্মানিত প্রতিষ্ঠাতাবৃন্দ
                 </h2>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "25px", marginBottom: "40px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "25px", marginBottom: "40px" }}>
                     {founders.map((m) => <MemberCard key={m.name} {...m} />)}
                 </div>
 
@@ -332,7 +336,7 @@ export default async function AboutPage() {
                     style={{
                         textAlign: "center",
                         margin: "0 0 25px",
-                        fontSize: "1.7rem",
+                        fontSize: "clamp(1.25rem, 5.2vw, 1.7rem)",
                         color: "#2c3e50",
                         borderBottom: "2px solid #3498db",
                         paddingBottom: "10px",
@@ -340,7 +344,7 @@ export default async function AboutPage() {
                 >
                     ১ম কার্যনির্বাহী কমিটি
                 </h2>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "25px", marginBottom: "40px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "25px", marginBottom: "40px" }}>
                     {committee1.map((m) => <MemberCard key={m.name} {...m} />)}
                 </div>
 
@@ -349,7 +353,7 @@ export default async function AboutPage() {
                     style={{
                         textAlign: "center",
                         margin: "0 0 25px",
-                        fontSize: "1.7rem",
+                        fontSize: "clamp(1.25rem, 5.2vw, 1.7rem)",
                         color: "#2c3e50",
                         borderBottom: "2px solid #3498db",
                         paddingBottom: "10px",
@@ -357,7 +361,7 @@ export default async function AboutPage() {
                 >
                     ২য় কার্যনির্বাহী কমিটি
                 </h2>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "25px", marginBottom: "40px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "25px", marginBottom: "40px" }}>
                     {committee2.map((m) => <MemberCard key={m.name} {...m} />)}
                 </div>
 
@@ -373,7 +377,7 @@ export default async function AboutPage() {
                 >
                     ইতিমধ্যে সম্পাদিত কাজ
                 </h2>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "30px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "30px" }}>
                     <WorkColumn title="শিক্ষা বিষয়ক" icon="fa-book-open" items={eduWorks} />
                     <WorkColumn title="সামাজিক ও সেবামূলক" icon="fa-hand-holding-heart" items={socialWorks} />
                 </div>

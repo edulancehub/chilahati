@@ -82,6 +82,25 @@ function db() {
     return getFirebaseAdminDb();
 }
 
+function isMissingIndexError(err: unknown): boolean {
+    if (!(err instanceof Error)) return false;
+    const code = (err as { code?: number }).code;
+    return code === 9 || /requires an index/i.test(err.message);
+}
+
+function getSortableTime(value: unknown): number {
+    if (!value) return 0;
+    if (typeof value === "string") {
+        const t = Date.parse(value);
+        return Number.isNaN(t) ? 0 : t;
+    }
+    if (typeof value === "object" && value !== null && "toDate" in value) {
+        const maybeToDate = (value as { toDate?: () => Date }).toDate;
+        if (typeof maybeToDate === "function") return maybeToDate().getTime();
+    }
+    return 0;
+}
+
 // ──────────────────────────── Users ──────────────────────────────
 
 export async function getUserByUid(uid: string): Promise<UserRecord | null> {
@@ -111,7 +130,31 @@ export async function upsertUser(uid: string, data: Record<string, unknown>): Pr
 // ──────────────────────────── Archive Items ───────────────────────
 
 export async function getArchiveItemBySlug(slug: string): Promise<ArchiveItemRecord | null> {
-    const doc = await db().collection("archive_items").doc(slug).get();
+    const candidates = [slug, decodeURIComponent(slug)];
+
+    for (const candidate of candidates) {
+        const doc = await db().collection("archive_items").doc(candidate).get();
+        if (doc.exists) {
+            return { id: doc.id, ...serializeDoc(doc.data()!) } as ArchiveItemRecord;
+        }
+    }
+
+    // Fallback for legacy records where slug/doc-id may differ in Unicode normalization.
+    const byField = await db().collection("archive_items").where("slug", "==", slug).limit(1).get();
+    if (!byField.empty) {
+        const doc = byField.docs[0];
+        return { id: doc.id, ...serializeDoc(doc.data()) } as ArchiveItemRecord;
+    }
+
+    const normalizedTarget = decodeURIComponent(slug).normalize("NFC");
+    const snap = await db().collection("archive_items").select("slug").get();
+    const matched = snap.docs.find((d) => {
+        const value = String(d.data().slug || d.id);
+        return value.normalize("NFC") === normalizedTarget;
+    });
+    if (!matched) return null;
+
+    const doc = await db().collection("archive_items").doc(matched.id).get();
     if (!doc.exists) return null;
     return { id: doc.id, ...serializeDoc(doc.data()!) } as ArchiveItemRecord;
 }
@@ -141,25 +184,48 @@ export async function deleteArchiveItem(slug: string): Promise<void> {
 }
 
 export async function listArchiveItemsByCategory(category: string): Promise<ArchiveItemRecord[]> {
-    const snap = await db()
-        .collection("archive_items")
-        .where("category", "==", category)
-        .orderBy("createdAt", "desc")
-        .get();
-    return snap.docs.map((d) => ({ id: d.id, ...serializeDoc(d.data()) } as ArchiveItemRecord));
+    try {
+        const snap = await db()
+            .collection("archive_items")
+            .where("category", "==", category)
+            .orderBy("createdAt", "desc")
+            .get();
+        return snap.docs.map((d) => ({ id: d.id, ...serializeDoc(d.data()) } as ArchiveItemRecord));
+    } catch (err) {
+        if (!isMissingIndexError(err)) throw err;
+        const snap = await db()
+            .collection("archive_items")
+            .where("category", "==", category)
+            .get();
+        return snap.docs
+            .map((d) => ({ id: d.id, ...serializeDoc(d.data()) } as ArchiveItemRecord))
+            .sort((a, b) => getSortableTime(b.createdAt) - getSortableTime(a.createdAt));
+    }
 }
 
 export async function listArchiveItemsByCategoryAndSubType(
     category: string,
     subType: string
 ): Promise<ArchiveItemRecord[]> {
-    const snap = await db()
-        .collection("archive_items")
-        .where("category", "==", category)
-        .where("subType", "==", subType)
-        .orderBy("createdAt", "desc")
-        .get();
-    return snap.docs.map((d) => ({ id: d.id, ...serializeDoc(d.data()) } as ArchiveItemRecord));
+    try {
+        const snap = await db()
+            .collection("archive_items")
+            .where("category", "==", category)
+            .where("subType", "==", subType)
+            .orderBy("createdAt", "desc")
+            .get();
+        return snap.docs.map((d) => ({ id: d.id, ...serializeDoc(d.data()) } as ArchiveItemRecord));
+    } catch (err) {
+        if (!isMissingIndexError(err)) throw err;
+        const snap = await db()
+            .collection("archive_items")
+            .where("category", "==", category)
+            .where("subType", "==", subType)
+            .get();
+        return snap.docs
+            .map((d) => ({ id: d.id, ...serializeDoc(d.data()) } as ArchiveItemRecord))
+            .sort((a, b) => getSortableTime(b.createdAt) - getSortableTime(a.createdAt));
+    }
 }
 
 export async function listAllArchiveSlugs(): Promise<string[]> {

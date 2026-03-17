@@ -53,6 +53,13 @@ function getEmbedUrl(url: string) {
     return url;
 }
 
+function normalizeExternalUrl(url: string) {
+    const value = String(url || "").trim();
+    if (!value) return "#";
+    if (/^(https?:|mailto:|tel:)/i.test(value)) return value;
+    return `https://${value}`;
+}
+
 function renderBlock(block: BodyBlock, itemTitle: string) {
     if (block.type === "heading") {
         return <h2 key={block.order} className="block-heading">{block.content}</h2>;
@@ -93,7 +100,7 @@ function renderBlock(block: BodyBlock, itemTitle: string) {
         try { linkData = JSON.parse(block.content); } catch { linkData.url = block.content; }
         return (
             <div key={block.order} className="block-link">
-                <a href={linkData.url} target="_blank" rel="noopener noreferrer" className="external-link">
+                <a href={normalizeExternalUrl(linkData.url)} target="_blank" rel="noopener noreferrer" className="external-link">
                     <i className="fas fa-link"></i> {linkData.title}
                 </a>
             </div>
@@ -154,11 +161,11 @@ export default async function EntryPage({ params }: { params: Promise<{ slug: st
                 <article className="content-area">
                     <header className="entry-header">
                         <nav className="breadcrumb" style={{ textTransform: "capitalize" }}>
-                            <Link href={`/archive/${categorySlug}`}>{item.category}</Link>
+                            <Link href={`/archive/${encodeURIComponent(categorySlug)}`}>{item.category}</Link>
                             {subTypeVal && (
                                 <>
                                     {" / "}
-                                    <Link href={`/archive/${categorySlug}/${subTypeVal}`}>{subTypeVal}</Link>
+                                    <Link href={`/archive/${encodeURIComponent(categorySlug)}/${encodeURIComponent(subTypeVal)}`}>{subTypeVal}</Link>
                                 </>
                             )}
                         </nav>
@@ -175,7 +182,7 @@ export default async function EntryPage({ params }: { params: Promise<{ slug: st
                         {isAdmin && (
                             <div style={{ marginTop: "1.5rem", display: "flex", gap: "1rem" }}>
                                 <Link
-                                    href={`/admin/edit/${item.id}`}
+                                    href={`/admin/edit/${encodeURIComponent(item.id)}`}
                                     style={{
                                         padding: "0.6rem 1.2rem",
                                         background: "#4a90e2",

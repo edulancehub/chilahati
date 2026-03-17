@@ -8,47 +8,108 @@ const VALID_CATEGORIES = new Set([
     "tourist spots", "transport", "Emergency services", "social works", "more",
 ]);
 
+const ALLOWED_BLOCK_TYPES = new Set(["heading", "paragraph", "image", "video", "link", "pdf"]);
+
+function normalizeSlug(rawSlug: unknown, fallbackTitle: unknown): string {
+    const candidate = String(rawSlug || fallbackTitle || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[/?#]+/g, "")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
+    return candidate;
+}
+
+function cleanRecord(record: Record<string, unknown>): Record<string, unknown> {
+    const cleaned: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(record)) {
+        if (typeof value === "undefined") continue;
+        if (typeof value === "string") {
+            const trimmed = value.trim();
+            if (!trimmed) continue;
+            cleaned[key] = trimmed;
+            continue;
+        }
+        cleaned[key] = value;
+    }
+    return cleaned;
+}
+
 export async function POST(req: NextRequest) {
     try {
         const session = await requireAdmin();
         const body = await req.json();
         const { title, slug, category, subType, thumbnail, bodyContent, bodyContentJSON, ...otherFields } = body;
+        const normalizedCategory = String(category || "").trim();
+        const normalizedTitle = String(title || "").trim();
+        const normalizedSlug = normalizeSlug(slug, title);
 
-        if (!VALID_CATEGORIES.has(category)) {
-            return NextResponse.json({ error: `Invalid Category: ${category}` }, { status: 400 });
+        if (!VALID_CATEGORIES.has(normalizedCategory)) {
+            return NextResponse.json({ error: `Invalid Category: ${normalizedCategory}` }, { status: 400 });
         }
-        if (!slug || !title || !category) {
+        if (!normalizedSlug || !normalizedTitle || !normalizedCategory) {
             return NextResponse.json({ error: "Title, slug, and category are required" }, { status: 400 });
         }
-        if (await slugExists(slug)) {
+        if (await slugExists(normalizedSlug)) {
             return NextResponse.json({ error: "The slug already exists. Please use a unique slug." }, { status: 409 });
         }
 
-        let parsedBodyContent = [];
+        let parsedBodyContent: Array<{ type: string; content: string; order: number }> = [];
         if (Array.isArray(bodyContent)) {
-            parsedBodyContent = bodyContent;
+            parsedBodyContent = bodyContent
+                .filter((block) => block && ALLOWED_BLOCK_TYPES.has(String(block.type)))
+                .map((block, index) => {
+                    const content = typeof block.content === "string"
+                        ? block.content
+                        : JSON.stringify(block.content ?? "");
+                    return {
+                        type: String(block.type),
+                        content,
+                        order: Number.isFinite(block.order) ? Number(block.order) : index,
+                    };
+                });
         } else if (bodyContentJSON) {
-            try { parsedBodyContent = JSON.parse(bodyContentJSON); } catch { /**/ }
+            try {
+                const parsed = JSON.parse(bodyContentJSON);
+                if (Array.isArray(parsed)) {
+                    parsedBodyContent = parsed
+                        .filter((block) => block && ALLOWED_BLOCK_TYPES.has(String(block.type)))
+                        .map((block, index) => ({
+                            type: String(block.type),
+                            content: typeof block.content === "string"
+                                ? block.content
+                                : JSON.stringify(block.content ?? ""),
+                            order: Number.isFinite(block.order) ? Number(block.order) : index,
+                        }));
+                }
+            } catch {
+                parsedBodyContent = [];
+            }
         }
+
+        const safeFields = cleanRecord(otherFields as Record<string, unknown>);
 
         const itemData: Record<string, unknown> = {
-            title, slug, category,
-            subType: subType || null,
-            thumbnail: thumbnail || null,
+            title: normalizedTitle,
+            slug: normalizedSlug,
+            category: normalizedCategory,
+            subType: subType ? String(subType).trim() : null,
+            thumbnail: thumbnail ? String(thumbnail).trim() : null,
             authorUid: session.userId,
             bodyContent: parsedBodyContent,
-            ...otherFields,
+            ...safeFields,
         };
 
-        if (otherFields.lat || otherFields.lng) {
-            const lat = parseFloat(otherFields.lat as string);
-            const lng = parseFloat(otherFields.lng as string);
+        if (safeFields.lat || safeFields.lng) {
+            const lat = parseFloat(String(safeFields.lat));
+            const lng = parseFloat(String(safeFields.lng));
             if (!isNaN(lat) && !isNaN(lng)) itemData.coordinates = { lat, lng };
         }
-        if (otherFields.eventDate) itemData.dateOfIncident = otherFields.eventDate;
+        if (safeFields.eventDate) itemData.dateOfIncident = safeFields.eventDate;
 
-        await createArchiveItem(slug, itemData);
-        return NextResponse.json({ success: true, slug });
+        await createArchiveItem(normalizedSlug, itemData);
+        return NextResponse.json({ success: true, slug: normalizedSlug });
     } catch (err) {
         if (err instanceof Error && (err.message === "UNAUTHORIZED" || err.message === "FORBIDDEN")) {
             return authErrorResponse(err);

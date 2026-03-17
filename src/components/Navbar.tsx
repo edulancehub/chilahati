@@ -78,12 +78,12 @@ export default function Navbar() {
         { href: "/archive/meritorious-student", icon: "fas fa-user-graduate", label: "Meritorious Students" },
         { href: "/archive/occupation", icon: "fas fa-tools", label: "Occupation" },
         { href: "/archive/hidden-talent", icon: "fas fa-star", label: "Hidden Talent" },
-        { href: "/archive/more", icon: "fas fa-ellipsis-h", label: "More" },
         { href: "/archive/heartbreaking-stories", icon: "fas fa-heart-broken", label: "Breaking Stories" },
         { href: "/archive/tourist-spots", icon: "fas fa-camera-retro", label: "Tourist Spots" },
         { href: "/archive/transport", icon: "fas fa-train", label: "Transport" },
         { href: "/archive/emergency-services", icon: "fas fa-hand-holding-medical", label: "Emergency" },
         { href: "/archive/social-works", icon: "fas fa-hands-helping", label: "Social Work" },
+        { href: "/archive/more", icon: "fas fa-ellipsis-h", label: "More" },
     ];
 
     return (

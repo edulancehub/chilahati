@@ -38,6 +38,17 @@ interface SubmissionItem {
     publishedSlug?: string;
 }
 
+function encodePathSegment(value: string): string {
+    return encodeURIComponent(String(value || "").trim());
+}
+
+function normalizeExternalHref(url?: string): string {
+    const value = String(url || "").trim();
+    if (!value) return "#";
+    if (/^(https?:|mailto:|tel:)/i.test(value)) return value;
+    return `https://${value}`;
+}
+
 export default function ContentManagementPage() {
     const { user } = useAuth();
     const [items, setItems] = useState<ContentItem[]>([]);
@@ -109,7 +120,7 @@ export default function ContentManagementPage() {
     const deleteItem = async (itemId: string) => {
         if (!confirm("Are you sure you want to delete this content? This action cannot be undone.")) return;
         try {
-            const res = await fetch(`/api/admin/${itemId}`, { method: "DELETE" });
+            const res = await fetch(`/api/admin/${encodePathSegment(itemId)}`, { method: "DELETE" });
             const data = await res.json();
             if (!res.ok) { setError(data.error || "Delete failed"); return; }
             setSuccess("Content deleted successfully");
@@ -250,7 +261,7 @@ export default function ContentManagementPage() {
                                     <p style={{ marginTop: "0.85rem", lineHeight: 1.6 }}>{submission.message}</p>
                                     {submission.sourceLink && (
                                         <p style={{ marginTop: "0.65rem" }}>
-                                            <a href={submission.sourceLink} target="_blank" rel="noopener noreferrer" className="action-btn btn-view">
+                                            <a href={normalizeExternalHref(submission.sourceLink)} target="_blank" rel="noopener noreferrer" className="action-btn btn-view">
                                                 <i className="fas fa-link"></i> Open Source Link
                                             </a>
                                         </p>
@@ -258,7 +269,7 @@ export default function ContentManagementPage() {
                                     {submission.publishedSlug && (
                                         <p style={{ marginTop: "0.65rem" }}>
                                             <i className="fas fa-check-circle" style={{ color: "#22c55e", marginRight: "6px" }}></i>
-                                            Published: <Link href={`/entry/${submission.publishedSlug}`} target="_blank">{submission.title}</Link>
+                                            Published: <Link href={`/entry/${encodePathSegment(submission.publishedSlug)}`} target="_blank">{submission.title}</Link>
                                         </p>
                                     )}
                                     {submission.adminNotes && (
@@ -384,13 +395,13 @@ export default function ContentManagementPage() {
                                 </div>
                             </div>
                             <div className="item-actions">
-                                <Link href={`/entry/${item.slug}`} target="_blank" className="action-btn btn-view" title="View Entry">
+                                <Link href={`/entry/${encodePathSegment(item.slug || item.id)}`} target="_blank" className="action-btn btn-view" title="View Entry">
                                     <i className="fas fa-eye"></i> View
                                 </Link>
-                                <Link href={`/admin/edit/${item.slug}`} className="action-btn btn-edit" title="Edit Entry">
+                                <Link href={`/admin/edit/${encodePathSegment(item.slug || item.id)}`} className="action-btn btn-edit" title="Edit Entry">
                                     <i className="fas fa-edit"></i> Edit
                                 </Link>
-                                <button onClick={() => deleteItem(item.slug)} className="action-btn btn-delete" title="Delete Entry">
+                                <button onClick={() => deleteItem(item.slug || item.id)} className="action-btn btn-delete" title="Delete Entry">
                                     <i className="fas fa-trash-alt"></i> Delete
                                 </button>
                             </div>

@@ -8,9 +8,8 @@ export default function Footer() {
                 <div>
                     <h4 className="footer-heading">স্বপ্নতরী ফাউন্ডেশন</h4>
                     <p className="footer-text">
-                        এসএসসি ২০২০ ব্যাচের উদ্যোগে গড়ে ওঠা একটি সামাজিক, স্বেচ্ছাসেবী ও সম্পূর্ণ
-                        অরাজনৈতিক সংগঠন। বর্তমানে বিভিন্ন ব্যাচের অংশগ্রহণে এটি একটি বৃহৎ মানবিক
-                        প্ল্যাটফর্মে পরিণত হয়েছে।
+                        এসএসসি ২০২০ ব্যাচের পরবর্তী সকল ব্যাচ কে নিয়ে গড়ে ওঠা একটি সামাজিক,
+                        স্বেচ্ছাসেবী ও সম্পূর্ণ অরাজনৈতিক সংগঠন।
                     </p>
                     <div style={{ display: "flex", gap: "0.6rem", marginTop: "1rem" }}>
                         {[
@@ -45,7 +44,9 @@ export default function Footer() {
                             <span>
                                 ০১৭১৭-৬৭৫৫১২ (ফারহান)<br />
                                 ০১৩৪১-২৮৫৬৭৬ (সাফিন)<br />
-                                ০১৭৬৭-২০৭৯৯৯ (ফাহিম)
+                                ০১৭৬৭-২০৭৯৯৯ (ফাহিম)<br />
+                                ০১৫৮৬-০৩৩৭৩২ (তুহাদ)<br />
+                                ০১৭৩০-২২১৯৪০ (জুবায়ের)
                             </span>
                         </li>
                         <li>
@@ -72,6 +73,12 @@ export default function Footer() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/founding_group.png" alt="স্বপ্নতরী ফাউন্ডেশন" className="footer-logo" />
                 <p>&copy; 2026 Chilahati.com &bull; স্বপ্নতরী ফাউন্ডেশন। সর্বস্বত্ব সংরক্ষিত।</p>
+                <p className="maintained-by">
+                    Maintained by{" "}
+                    <a href="https://luminexlabs.io" target="_blank" rel="noopener noreferrer" className="maintained-link">
+                        <i className="fa-solid fa-bolt"></i> luminexlabs.io
+                    </a>
+                </p>
             </div>
         </footer>
     );
