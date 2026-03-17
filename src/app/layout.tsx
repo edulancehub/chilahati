@@ -20,6 +20,14 @@ export const metadata: Metadata = {
     template: "%s | Chilahati.com",
   },
   description: "Chilahati.com preserves the history, people, institutions, and stories of Chilahati.",
+  keywords: [
+    "chilahati",
+    "chilahti",
+    "chilahati archive",
+    "chilahti-archive",
+    "chilahati.com",
+    "nilphamari history",
+  ],
   applicationName: "Chilahati.com",
   icons: {
     icon: "/icon.svg",

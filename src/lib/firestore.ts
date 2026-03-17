@@ -261,12 +261,32 @@ export async function searchArchiveItems(query: string): Promise<ArchiveItemReco
         .get();
     const all = snap.docs.map((d) => ({ id: d.id, ...serializeDoc(d.data()) } as ArchiveItemRecord));
     const q = query.toLowerCase();
+
+    const normalizedQuery = q.replace(/[\s\-_.]/g, "");
+    const siteAliases = new Set(["chilahati", "chilahti", "chilahatiarchive", "chilahtiarchive"]);
+    if (siteAliases.has(normalizedQuery)) {
+        return all;
+    }
+
     return all.filter((item) => {
+        const bodyText = Array.isArray(item.bodyContent)
+            ? item.bodyContent
+                  .map((b) => {
+                      if (!b || typeof b !== "object") return "";
+                      const content = (b as { content?: unknown }).content;
+                      return typeof content === "string"
+                          ? content.replace(/<[^>]*>/g, " ")
+                          : "";
+                  })
+                  .join(" ")
+            : "";
+
         const fields = [
             item.title,
             item.category,
             item.subType,
             item.slug,
+            bodyText,
             item.profession,
             item.education,
             item.address,

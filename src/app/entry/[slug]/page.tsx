@@ -77,12 +77,20 @@ function normalizeExternalUrl(url: string) {
     return `https://${value}`;
 }
 
+function sanitizeParagraphHtml(html: string) {
+    return String(html || "")
+        .replace(/<li>(?:\s|&nbsp;|<br\s*\/?>)*<\/li>/gi, "")
+        .replace(/<(ul|ol)>(?:\s|&nbsp;|<br\s*\/?>)*<\/\1>/gi, "")
+        .trim();
+}
+
 function renderBlock(block: BodyBlock, itemTitle: string) {
     if (block.type === "heading") {
         return <h2 key={block.order} className="block-heading">{block.content}</h2>;
     }
     if (block.type === "paragraph") {
-        return <div key={block.order} className="block-paragraph" dangerouslySetInnerHTML={{ __html: block.content }} />;
+        const cleanHtml = sanitizeParagraphHtml(block.content);
+        return <div key={block.order} className="block-paragraph" dangerouslySetInnerHTML={{ __html: cleanHtml }} />;
     }
     if (block.type === "image") {
         let imgUrl = "";
