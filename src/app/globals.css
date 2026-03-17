@@ -1922,6 +1922,24 @@ body.dark-mode .admin-header {
   margin-bottom: 25px;
   font-size: 1.15rem;
   color: rgba(255, 255, 255, 0.9);
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.block-paragraph p,
+.block-paragraph li {
+  text-align: left;
+  word-break: normal;
+}
+
+.block-paragraph ul,
+.block-paragraph ol {
+  margin: 0.65rem 0 0.9rem;
+  padding-left: 1.2rem;
+}
+
+.block-paragraph li {
+  margin: 0.25rem 0;
 }
 
 .block-image {
@@ -2501,8 +2519,13 @@ body.dark-mode .admin-header {
   }
 
   .block-paragraph {
-    font-size: 1rem;
+    font-size: 0.96rem;
     line-height: 1.7;
+  }
+
+  .block-paragraph ul,
+  .block-paragraph ol {
+    padding-left: 1rem;
   }
 
   .block-video iframe {
@@ -2727,6 +2750,20 @@ body.dark-mode .admin-header {
 
   .item-info h3 {
     font-size: 1.1rem;
+  }
+
+  .entry-body {
+    padding: 14px 12px;
+  }
+
+  .block-paragraph {
+    font-size: 0.93rem;
+    line-height: 1.68;
+  }
+
+  .block-paragraph ul,
+  .block-paragraph ol {
+    padding-left: 0.9rem;
   }
 
   .card.item-card {
