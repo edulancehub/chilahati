@@ -57,6 +57,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
             slug,
             category: submission.category,
             authorUid: submission.submittedBy,
+            authorName: submission.submitterName,
             bodyContent,
         };
         if (submission.subType) itemData.subType = submission.subType;

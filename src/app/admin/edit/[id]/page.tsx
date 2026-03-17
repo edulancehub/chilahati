@@ -83,7 +83,11 @@ export default function AdminEditPage({ params }: { params: Promise<{ id: string
             .then((res) => res.json())
             .then((data) => {
                 if (data.error) { setError(data.error); return; }
-                const item = data;
+                const item = data.item || data;
+                if (!item || typeof item !== "object") {
+                    setError("Invalid item data");
+                    return;
+                }
                 setCategory(item.category || "");
                 setSubType(item.subType || "");
                 setTitle(item.title || "");

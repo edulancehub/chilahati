@@ -97,6 +97,7 @@ export async function POST(req: NextRequest) {
             subType: subType ? String(subType).trim() : null,
             thumbnail: thumbnail ? String(thumbnail).trim() : null,
             authorUid: session.userId,
+            authorName: session.username,
             bodyContent: parsedBodyContent,
             ...safeFields,
         };

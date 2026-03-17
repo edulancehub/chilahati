@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getArchiveItemBySlug, listAllArchiveSlugs } from "@/lib/firestore";
+import { getArchiveItemBySlug, getUserByUid, listAllArchiveSlugs } from "@/lib/firestore";
 import { normalizeBodyContentImages, normalizeImageUrl } from "@/lib/media";
 import { getSession } from "@/lib/auth";
 
@@ -42,6 +42,23 @@ interface BodyBlock {
 function formatDate(dateStr: string | undefined) {
     if (!dateStr) return "";
     return new Date(dateStr).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function formatUpdatedDateTime(dateStr: string | undefined) {
+    if (!dateStr) return "-";
+    const dt = new Date(dateStr);
+    if (Number.isNaN(dt.getTime())) return "-";
+    const datePart = dt.toLocaleDateString("en-US", {
+        month: "numeric",
+        day: "numeric",
+        year: "numeric",
+    });
+    const timePart = dt.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+    });
+    return `${datePart}, ${timePart}`;
 }
 
 function getEmbedUrl(url: string) {
@@ -154,6 +171,15 @@ export default async function EntryPage({ params }: { params: Promise<{ slug: st
             : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trimmed)}`;
     }
 
+    let contributorName = String(item.authorName || "").trim();
+    if (!contributorName && item.authorUid) {
+        const author = await getUserByUid(String(item.authorUid));
+        contributorName = author?.username || "";
+    }
+    if (!contributorName) contributorName = "Unknown";
+
+    const updatedLabel = formatUpdatedDateTime((item.updatedAt as string | undefined) || (item.createdAt as string | undefined));
+
     return (
         <div className="main-content detail-page">
             <div className="detail-container">
@@ -178,7 +204,8 @@ export default async function EntryPage({ params }: { params: Promise<{ slug: st
                     </div>
 
                     <footer className="entry-footer" style={{ marginTop: "2rem", opacity: 0.7 }}>
-                        <p>Last Updated: {item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : "—"}</p>
+                        <p>Contributed by: {contributorName}</p>
+                        <p>Last Updated: {updatedLabel}</p>
                         {isAdmin && (
                             <div style={{ marginTop: "1.5rem", display: "flex", gap: "1rem" }}>
                                 <Link
