@@ -36,22 +36,8 @@ export default function Footer() {
                     <h4 className="footer-heading">যোগাযোগ</h4>
                     <ul className="footer-contact-list">
                         <li>
-                            <i className="fa-solid fa-location-dot footer-icon"></i>
-                            চিলাহাটি, ডোমার, নীলফামারী, বাংলাদেশ।
-                        </li>
-                        <li>
                             <i className="fa-solid fa-phone footer-icon"></i>
-                            <span>
-                                ০১৭১৭-৬৭৫৫১২ (ফারহান)<br />
-                                ০১৩৪১-২৮৫৬৭৬ (সাফিন)<br />
-                                ০১৭৬৭-২০৭৯৯৯ (ফাহিম)<br />
-                                ০১৫৮৬-০৩৩৭৩২ (তুহাদ)<br />
-                                ০১৭৩০-২২১৯৪০ (জুবায়ের)
-                            </span>
-                        </li>
-                        <li>
-                            <i className="fa-solid fa-envelope footer-icon"></i>
-                            <a href="mailto:sopnotory26@gmail.com" className="footer-link">sopnotory26@gmail.com</a>
+                            <a href="tel:+8801717675512" className="footer-link">০১৭১৭-৬৭৫৫১২</a>
                         </li>
                     </ul>
                 </div>
@@ -71,7 +57,7 @@ export default function Footer() {
             {/* Bottom bar */}
             <div className="footer-bottom">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/founding_group.png" alt="স্বপ্নতরী ফাউন্ডেশন" className="footer-logo" />
+                <img loading="lazy" decoding="async" src="/founding_group.png" alt="স্বপ্নতরী ফাউন্ডেশন" className="footer-logo"/>
                 <p>&copy; 2026 Chilahati.com &bull; স্বপ্নতরী ফাউন্ডেশন। সর্বস্বত্ব সংরক্ষিত।</p>
                 <p className="maintained-by">
                     Maintained by{" "}

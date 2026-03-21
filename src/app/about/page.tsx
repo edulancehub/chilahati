@@ -30,6 +30,8 @@ function MemberCard({ name, role, phone, fb, img }: MemberCardProps) {
             <img
                 src={img}
                 alt={name}
+                loading="lazy"
+                decoding="async"
                 style={{
                     width: "120px",
                     height: "120px",
@@ -38,6 +40,7 @@ function MemberCard({ name, role, phone, fb, img }: MemberCardProps) {
                     margin: "0 auto 15px",
                     display: "block",
                     border: "3px solid #3498db",
+                    backgroundColor: "#e8f4fd",
                 }}
             />
             <h4 style={{ margin: "10px 0 5px", fontSize: "1.15rem", color: "#2c3e50" }}>{name}</h4>
@@ -200,7 +203,7 @@ export default async function AboutPage() {
                     }}
                 >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://raw.githubusercontent.com/mdfhf2020-ui/About-us/main/l.png" alt="স্বপ্নতরী লোগো" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <img loading="lazy" decoding="async" src="https://raw.githubusercontent.com/mdfhf2020-ui/About-us/main/l.png" alt="স্বপ্নতরী লোগো" style={{ width: "100%", height: "100%", objectFit: "cover" }}/>
                 </div>
                 <h2 style={{ margin: "10px 0", fontSize: "clamp(1.6rem, 7vw, 2.4rem)", fontWeight: 800, color: "#2c3e50", lineHeight: 1.25 }}>
                     স্বপ্নতরী ফাউন্ডেশন

@@ -19,6 +19,7 @@ export default function ArchiveCategoryPage({ params }: { params: Promise<{ cate
     const [subTypes, setSubTypes] = useState<string[]>([]);
     const [title, setTitle] = useState("");
     const [displayCategory, setDisplayCategory] = useState("");
+    const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
     useEffect(() => {
         fetch(`/api/archive/${category}`)
@@ -88,18 +89,21 @@ export default function ArchiveCategoryPage({ params }: { params: Promise<{ cate
                 <p>{items.length} entries found in this archive.</p>
             </header>
 
-            <div className="menu-grid list-grid">
+            <div className="archive-list-grid">
                 {items.length > 0 ? (
                     items.map((item) => (
                         <Link key={item._id} href={`/entry/${item.slug}`} className="card item-card">
-                            {item.thumbnail ? (
+                            {item.thumbnail && !failedImages.has(item._id) ? (
                                 <div className="item-thumb">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         src={item.thumbnail}
                                         alt={item.title}
                                         referrerPolicy="no-referrer"
+                                        loading="lazy"
+                                        decoding="async"
                                         style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                        onError={() => setFailedImages(prev => new Set([...prev, item._id]))}
                                     />
                                 </div>
                             ) : (

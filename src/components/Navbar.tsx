@@ -90,7 +90,9 @@ export default function Navbar() {
         <>
             <nav className="navbar">
                 <Link href="/" className="logo">
-                    <i className="fas fa-train"></i> Chilahati
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/logo.png" alt="Chilahati" className="nav-logo-img" />
+                    Chilahati
                 </Link>
 
                 {/* ===== DESKTOP NAV ===== */}
@@ -139,7 +141,7 @@ export default function Navbar() {
                     ) : (
                         <>
                             {isAdmin && (
-                                <Link href="/admin/add" className="nav-item" style={{ color: "#ffda79" }}>
+                                <Link href="/admin/add" className="nav-item" style={{ color: "#d35400" }}>
                                     <i className="fas fa-plus-circle"></i> Add Content
                                 </Link>
                             )}
@@ -149,7 +151,7 @@ export default function Navbar() {
                                     style={{
                                         display: "inline-flex", alignItems: "center", gap: "6px",
                                         padding: "0.45rem 1rem", borderRadius: "20px",
-                                        background: "rgba(255,193,7,0.18)", color: "#ffda79",
+                                        background: "rgba(255,193,7,0.18)", color: "#d35400",
                                         border: "1px solid rgba(255,193,7,0.35)",
                                         fontWeight: 700, fontSize: "0.9rem", textDecoration: "none",
                                         transition: "background 0.2s",
@@ -173,7 +175,7 @@ export default function Navbar() {
                             ) : (
                                 <Link href="/profile" className="nav-item">Hi, {user.username}</Link>
                             )}
-                            <button onClick={logout} className="login-btn" style={{ padding: "0.5rem 1rem", fontSize: "0.9rem", background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)", borderRadius: "30px", color: "#fff", fontWeight: 600, cursor: "pointer" }}>
+                            <button onClick={logout} className="login-btn" style={{ padding: "0.5rem 1rem", fontSize: "0.9rem", background: "rgba(0,0,0,0.08)", border: "1px solid rgba(0,0,0,0.1)", borderRadius: "30px", color: "#333", fontWeight: 600, cursor: "pointer" }}>
                                 Logout
                             </button>
                         </>
@@ -237,12 +239,12 @@ export default function Navbar() {
                     </Link>
 
                     {isAdmin && (
-                        <Link href="/admin/add" className="mobile-nav-item" onClick={closeMobile} style={{ color: "#ffda79" }}>
+                        <Link href="/admin/add" className="mobile-nav-item" onClick={closeMobile} style={{ color: "#d35400" }}>
                             <i className="fas fa-plus-circle"></i> Add Content
                         </Link>
                     )}
                     {isAdmin && (
-                        <Link href="/admin/content-management" className="mobile-nav-item" onClick={closeMobile} style={{ color: "#ffda79", fontWeight: 700 }}>
+                        <Link href="/admin/content-management" className="mobile-nav-item" onClick={closeMobile} style={{ color: "#d35400", fontWeight: 700 }}>
                             <i className="fas fa-shield-alt"></i> Admin Panel
                         </Link>
                     )}
@@ -276,3 +278,5 @@ export default function Navbar() {
         </>
     );
 }
+
+
