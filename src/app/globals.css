@@ -39,7 +39,7 @@ body {
   transition: background 0.5s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-wrap: normal;
+  overflow-wrap: break-word;
   word-break: normal;
   hyphens: none;
   -webkit-hyphens: none;
@@ -1266,11 +1266,11 @@ body.dark-mode {
 }
 
 .form-section {
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--bg-surface);
   padding: 20px;
   border-radius: 10px;
   margin-bottom: 20px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
 }
 
 .hidden {
@@ -1284,35 +1284,39 @@ label {
   color: var(--text-secondary);
 }
 
-select,
-input,
-textarea {
+/* Scope dark admin inputs only to admin container */
+.admin-container select,
+.admin-container input,
+.admin-container textarea {
   width: 100%;
   padding: 10px;
   margin-bottom: 15px;
-  background: #222;
-  border: 1px solid #444;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
   color: var(--text-color);
   border-radius: 5px;
+  font-family: var(--font-poppins), 'Poppins', sans-serif;
 }
 
-select:focus,
-input:focus,
-textarea:focus {
+.admin-container select:focus,
+.admin-container input:focus,
+.admin-container textarea:focus {
   outline: none;
   border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
 }
 
 .block-editor {
-  border: 1px dashed #666;
+  border: 1px dashed var(--border-strong);
   padding: 10px;
   min-height: 200px;
   border-radius: 5px;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--bg-page);
 }
 
 .block-item {
-  background: #333;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   padding: 15px;
   margin-bottom: 10px;
   border-radius: 5px;
@@ -1341,9 +1345,9 @@ textarea:focus {
 }
 
 .tool-btn {
-  background: #444;
+  background: var(--bg-page);
   color: var(--text-color);
-  border: none;
+  border: 1px solid var(--border-color);
   padding: 8px 15px;
   cursor: pointer;
   border-radius: 4px;
@@ -1351,7 +1355,7 @@ textarea:focus {
 }
 
 .tool-btn:hover {
-  background: #666;
+  background: var(--border-color);
 }
 
 .block-input {
@@ -1367,22 +1371,24 @@ textarea:focus {
 .block-caption {
   margin-top: 5px;
   font-size: 0.9rem;
-  color: #aaa;
+  color: var(--text-muted);
 }
 
 .ql-toolbar {
-  background: #ccc;
+  background: var(--bg-page);
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
+  border-color: var(--border-color) !important;
 }
 
 .ql-container {
-  background: #222;
+  background: var(--bg-surface);
   color: var(--text-color);
   font-family: var(--font-poppins), 'Poppins', sans-serif;
   font-size: 1rem;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
+  border-color: var(--border-color) !important;
 }
 
 .ql-editor {
@@ -1677,7 +1683,7 @@ body.dark-mode .admin-header {
   font-weight: 600;
   line-height: 1.35;
   word-break: normal;
-  overflow-wrap: normal;
+  overflow-wrap: break-word;
   hyphens: none;
   -webkit-hyphens: none;
 }
@@ -1979,7 +1985,7 @@ body.dark-mode .admin-header {
   margin-bottom: 0.5rem;
   line-height: 1.2;
   color: var(--text-color);
-  overflow-wrap: normal;
+  overflow-wrap: break-word;
   word-break: normal;
   hyphens: none;
   -webkit-hyphens: none;
@@ -2022,7 +2028,7 @@ body.dark-mode .admin-header {
   font-size: 1.15rem;
   color: var(--text-color);
   text-align: left;
-  overflow-wrap: normal;
+  overflow-wrap: break-word;
   word-break: normal;
   hyphens: none;
   -webkit-hyphens: none;
@@ -2045,7 +2051,7 @@ body.dark-mode .admin-header {
   text-align: left;
   min-width: 80px;
   white-space: normal;
-  overflow-wrap: normal;
+  overflow-wrap: break-word;
   word-break: normal;
   hyphens: none;
   -webkit-hyphens: none;
@@ -2061,7 +2067,7 @@ body.dark-mode .admin-header {
 .block-paragraph li {
   text-align: left;
   word-break: normal;
-  overflow-wrap: normal;
+  overflow-wrap: break-word;
   hyphens: none;
   -webkit-hyphens: none;
 }
@@ -2155,7 +2161,7 @@ body.dark-mode .admin-header {
   background: rgba(255, 255, 255, 0.05);
   color: rgba(255, 255, 255, 0.62);
   font-weight: 500;
-  overflow-wrap: normal;
+  overflow-wrap: break-word;
   word-break: normal;
   hyphens: none;
   -webkit-hyphens: none;
@@ -2164,7 +2170,7 @@ body.dark-mode .admin-header {
 .infobox-table td {
   padding: 12px 15px;
   color: rgba(255, 255, 255, 0.88);
-  overflow-wrap: normal;
+  overflow-wrap: break-word;
   word-break: normal;
   hyphens: none;
   -webkit-hyphens: none;
@@ -2265,7 +2271,7 @@ body.dark-mode .admin-header {
   font-size: 1.25rem;
   margin: 0;
   line-height: 1.4;
-  overflow-wrap: normal;
+  overflow-wrap: break-word;
   word-break: normal;
   hyphens: none;
   -webkit-hyphens: none;
@@ -3054,7 +3060,7 @@ body.dark-mode .admin-header {
     padding: 8px 10px;
     font-size: 0.83rem;
     word-break: normal;
-    overflow-wrap: normal;
+    overflow-wrap: break-word;
     hyphens: none;
     -webkit-hyphens: none;
   }
@@ -3179,13 +3185,4 @@ body.dark-mode .page-link {
 .contribute-footer {
   color: var(--text-muted);
 }
-
-/* Dark mode: admin add/edit inputs & selects use existing dark vars */
-body.dark-mode select,
-body.dark-mode input:not(.search-txt):not(.mobile-search input),
-body.dark-mode textarea:not(.message-area) {
-  background: #1e1e2e;
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
 
