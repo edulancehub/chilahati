@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getArchiveItemBySlug, getUserByUid, listAllArchiveSlugs } from "@/lib/firestore";
 import { normalizeBodyContentImages, normalizeImageUrl } from "@/lib/media";
 import { getSession } from "@/lib/auth";
+import { wrapHtmlWords } from "@/lib/bengali-text";
 
 export const revalidate = 60; // ISR: regenerate every 60 seconds
 
@@ -86,11 +87,11 @@ function sanitizeParagraphHtml(html: string) {
 
 function renderBlock(block: BodyBlock, itemTitle: string) {
     if (block.type === "heading") {
-        return <h2 key={block.order} className="block-heading">{block.content}</h2>;
+        return <h2 key={block.order} className="block-heading" dangerouslySetInnerHTML={{ __html: wrapHtmlWords(block.content) }} />;
     }
     if (block.type === "paragraph") {
         const cleanHtml = sanitizeParagraphHtml(block.content);
-        return <div key={block.order} className="block-paragraph" dangerouslySetInnerHTML={{ __html: cleanHtml }} />;
+        return <div key={block.order} className="block-paragraph" dangerouslySetInnerHTML={{ __html: wrapHtmlWords(cleanHtml) }} />;
     }
     if (block.type === "image") {
         let imgUrl = "";

@@ -130,7 +130,9 @@ export async function upsertUser(uid: string, data: Record<string, unknown>): Pr
 // ──────────────────────────── Archive Items ───────────────────────
 
 export async function getArchiveItemBySlug(slug: string): Promise<ArchiveItemRecord | null> {
-    const candidates = [slug, decodeURIComponent(slug)];
+    const decoded = decodeURIComponent(slug);
+    // Try direct doc-ID lookup with raw, decoded, and hyphen↔space variants
+    const candidates = new Set([slug, decoded, decoded.replace(/-/g, " "), decoded.replace(/\s+/g, "-")]);
 
     for (const candidate of candidates) {
         const doc = await db().collection("archive_items").doc(candidate).get();
@@ -139,18 +141,22 @@ export async function getArchiveItemBySlug(slug: string): Promise<ArchiveItemRec
         }
     }
 
-    // Fallback for legacy records where slug/doc-id may differ in Unicode normalization.
-    const byField = await db().collection("archive_items").where("slug", "==", slug).limit(1).get();
-    if (!byField.empty) {
-        const doc = byField.docs[0];
-        return { id: doc.id, ...serializeDoc(doc.data()) } as ArchiveItemRecord;
+    // Fallback: query by slug field (try original + variants)
+    for (const candidate of candidates) {
+        const byField = await db().collection("archive_items").where("slug", "==", candidate).limit(1).get();
+        if (!byField.empty) {
+            const doc = byField.docs[0];
+            return { id: doc.id, ...serializeDoc(doc.data()) } as ArchiveItemRecord;
+        }
     }
 
-    const normalizedTarget = decodeURIComponent(slug).normalize("NFC");
+    // Nuclear fallback: full scan with Unicode + space/hyphen normalization
+    const norm = (s: string) => s.normalize("NFC").replace(/[-\s]+/g, " ").trim().toLowerCase();
+    const normalizedTarget = norm(decodeURIComponent(slug));
     const snap = await db().collection("archive_items").select("slug").get();
     const matched = snap.docs.find((d) => {
         const value = String(d.data().slug || d.id);
-        return value.normalize("NFC") === normalizedTarget;
+        return norm(value) === normalizedTarget;
     });
     if (!matched) return null;
 
