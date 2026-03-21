@@ -30,7 +30,7 @@
 }
 
 body {
-  font-family: var(--font-poppins), 'Poppins', sans-serif;
+  font-family: var(--font-poppins), var(--font-bengali), 'Poppins', 'Noto Sans Bengali', sans-serif;
   background: var(--bg-page);
   min-height: 100vh;
   color: var(--text-color);
@@ -40,7 +40,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-wrap: break-word;
-  word-break: normal;
+  word-wrap: break-word;
+  word-break: keep-all;
   hyphens: none;
   -webkit-hyphens: none;
   -ms-hyphens: none;
@@ -1682,8 +1683,10 @@ body.dark-mode .admin-header {
   color: var(--text-color);
   font-weight: 600;
   line-height: 1.35;
-  word-break: normal;
+  word-break: keep-all;
   overflow-wrap: break-word;
+  word-wrap: break-word;
+  line-break: strict;
   hyphens: none;
   -webkit-hyphens: none;
 }
@@ -1986,7 +1989,8 @@ body.dark-mode .admin-header {
   line-height: 1.2;
   color: var(--text-color);
   overflow-wrap: break-word;
-  word-break: normal;
+  word-wrap: break-word;
+  word-break: keep-all;
   hyphens: none;
   -webkit-hyphens: none;
 }
@@ -2015,11 +2019,19 @@ body.dark-mode .admin-header {
 }
 
 .block-heading {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 2px solid rgba(30, 80, 160, 0.25);
   margin: 40px 0 20px;
   padding-bottom: 8px;
   font-size: 2.2rem;
-  color: #d35400;
+  color: #1a5276;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: keep-all;
+}
+
+body.dark-mode .block-heading {
+  color: #5dade2;
+  border-bottom-color: rgba(93, 173, 226, 0.25);
 }
 
 .block-paragraph {
@@ -2029,7 +2041,9 @@ body.dark-mode .admin-header {
   color: var(--text-color);
   text-align: left;
   overflow-wrap: break-word;
-  word-break: normal;
+  word-wrap: break-word;
+  word-break: keep-all;
+  line-break: strict;
   hyphens: none;
   -webkit-hyphens: none;
 }
@@ -2039,9 +2053,20 @@ body.dark-mode .admin-header {
   border-collapse: collapse;
   font-size: 0.95em;
   margin: 1rem 0;
-  display: block;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  display: table;
+  table-layout: auto;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: keep-all;
+  line-break: strict;
+}
+
+/* Scrollable table wrapper for mobile */
+@media (max-width: 768px) {
+  .block-paragraph {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 .block-paragraph table th,
@@ -2049,10 +2074,12 @@ body.dark-mode .admin-header {
   padding: 8px 12px;
   border: 1px solid var(--border-color);
   text-align: left;
-  min-width: 80px;
+  min-width: 60px;
   white-space: normal;
   overflow-wrap: break-word;
-  word-break: normal;
+  word-wrap: break-word;
+  word-break: keep-all;
+  line-break: strict;
   hyphens: none;
   -webkit-hyphens: none;
 }
@@ -2066,8 +2093,10 @@ body.dark-mode .admin-header {
 .block-paragraph p,
 .block-paragraph li {
   text-align: left;
-  word-break: normal;
+  word-break: keep-all;
   overflow-wrap: break-word;
+  word-wrap: break-word;
+  line-break: strict;
   hyphens: none;
   -webkit-hyphens: none;
 }
@@ -2077,6 +2106,10 @@ body.dark-mode .admin-header {
   margin: 0.65rem 0 0.9rem;
   padding-left: 1.5rem;
   list-style-type: none;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: keep-all;
+  line-break: strict;
 }
 
 .block-paragraph ol {
@@ -2087,7 +2120,9 @@ body.dark-mode .admin-header {
 .block-paragraph li {
   margin: 0.25rem 0;
   overflow-wrap: break-word;
-  word-break: normal;
+  word-wrap: break-word;
+  word-break: keep-all;
+  line-break: strict;
 }
 
 .block-image {
@@ -2162,7 +2197,9 @@ body.dark-mode .admin-header {
   color: rgba(255, 255, 255, 0.62);
   font-weight: 500;
   overflow-wrap: break-word;
-  word-break: normal;
+  word-wrap: break-word;
+  word-break: keep-all;
+  line-break: strict;
   hyphens: none;
   -webkit-hyphens: none;
 }
@@ -2171,7 +2208,9 @@ body.dark-mode .admin-header {
   padding: 12px 15px;
   color: rgba(255, 255, 255, 0.88);
   overflow-wrap: break-word;
-  word-break: normal;
+  word-wrap: break-word;
+  word-break: keep-all;
+  line-break: strict;
   hyphens: none;
   -webkit-hyphens: none;
 }
@@ -2272,7 +2311,9 @@ body.dark-mode .admin-header {
   margin: 0;
   line-height: 1.4;
   overflow-wrap: break-word;
-  word-break: normal;
+  word-wrap: break-word;
+  word-break: keep-all;
+  line-break: strict;
   hyphens: none;
   -webkit-hyphens: none;
 }
@@ -3059,8 +3100,10 @@ body.dark-mode .admin-header {
   .infobox-table td {
     padding: 8px 10px;
     font-size: 0.83rem;
-    word-break: normal;
+    word-break: keep-all;
     overflow-wrap: break-word;
+    word-wrap: break-word;
+    line-break: strict;
     hyphens: none;
     -webkit-hyphens: none;
   }
