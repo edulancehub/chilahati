@@ -39,8 +39,12 @@ body {
   transition: background 0.5s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
   word-break: normal;
+  hyphens: none;
+  -webkit-hyphens: none;
+  -ms-hyphens: none;
+  line-break: strict;
 }
 
 @keyframes gradientBG {
@@ -1672,7 +1676,10 @@ body.dark-mode .admin-header {
   color: var(--text-color);
   font-weight: 600;
   line-height: 1.35;
-  word-break: break-word;
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+  -webkit-hyphens: none;
 }
 
 .dark-mode .item-info h3 {
@@ -1972,8 +1979,10 @@ body.dark-mode .admin-header {
   margin-bottom: 0.5rem;
   line-height: 1.2;
   color: var(--text-color);
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
   word-break: normal;
+  hyphens: none;
+  -webkit-hyphens: none;
 }
 
 .breadcrumb {
@@ -2013,8 +2022,10 @@ body.dark-mode .admin-header {
   font-size: 1.15rem;
   color: var(--text-color);
   text-align: left;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
   word-break: normal;
+  hyphens: none;
+  -webkit-hyphens: none;
 }
 
 .block-paragraph table {
@@ -2034,8 +2045,10 @@ body.dark-mode .admin-header {
   text-align: left;
   min-width: 80px;
   white-space: normal;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
   word-break: normal;
+  hyphens: none;
+  -webkit-hyphens: none;
 }
 
 .block-paragraph table th {
@@ -2048,7 +2061,9 @@ body.dark-mode .admin-header {
 .block-paragraph li {
   text-align: left;
   word-break: normal;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
+  hyphens: none;
+  -webkit-hyphens: none;
 }
 
 .block-paragraph ul,
@@ -2140,15 +2155,19 @@ body.dark-mode .admin-header {
   background: rgba(255, 255, 255, 0.05);
   color: rgba(255, 255, 255, 0.62);
   font-weight: 500;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
   word-break: normal;
+  hyphens: none;
+  -webkit-hyphens: none;
 }
 
 .infobox-table td {
   padding: 12px 15px;
   color: rgba(255, 255, 255, 0.88);
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
   word-break: normal;
+  hyphens: none;
+  -webkit-hyphens: none;
 }
 
 .map-btn {
@@ -2246,8 +2265,10 @@ body.dark-mode .admin-header {
   font-size: 1.25rem;
   margin: 0;
   line-height: 1.4;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
   word-break: normal;
+  hyphens: none;
+  -webkit-hyphens: none;
 }
 
 .item-excerpt {
@@ -3033,7 +3054,9 @@ body.dark-mode .admin-header {
     padding: 8px 10px;
     font-size: 0.83rem;
     word-break: normal;
-    overflow-wrap: break-word;
+    overflow-wrap: normal;
+    hyphens: none;
+    -webkit-hyphens: none;
   }
 
   .infobox-table th {
@@ -3126,6 +3149,13 @@ body.dark-mode .block-paragraph a {
 
 body.dark-mode .block-paragraph a:hover {
   color: #a8d4ff;
+}
+
+/* URLs inside content can break so they don't overflow */
+.block-paragraph a,
+.entry-header a {
+  overflow-wrap: anywhere;
+  word-break: break-all;
 }
 
 /* Dark mode search header */

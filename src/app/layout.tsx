@@ -50,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={poppins.variable}>
+    <html lang="bn" className={poppins.variable}>
       <head>
         <link
           rel="stylesheet"
