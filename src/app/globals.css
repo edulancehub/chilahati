@@ -40,7 +40,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   word-break: normal;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   line-break: auto;
   hyphens: none;
   -webkit-hyphens: none;
@@ -255,6 +255,8 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .nav-logo-img {
@@ -269,6 +271,8 @@ body {
   display: flex;
   gap: 2.5rem;
   align-items: center;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .nav-item {
@@ -279,6 +283,7 @@ body {
   transition: color 0.3s;
   position: relative;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .nav-item:hover {
@@ -311,6 +316,7 @@ body {
   background: none;
   border: none;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .dropdown-toggle::after {
@@ -413,6 +419,7 @@ body {
   display: flex;
   gap: 1.5rem;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .search-box {
@@ -470,6 +477,7 @@ body {
   font-weight: 600;
   font-size: 1.1rem;
   transition: all 0.3s;
+  white-space: nowrap;
 }
 
 .login-btn:hover {
@@ -760,6 +768,65 @@ body.dark-mode .footer-social-btn:hover {
 body.dark-mode .footer-bottom {
   border-top-color: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.4);
+}
+
+/* Medium desktop: shrink nav spacing to prevent cramping */
+@media (max-width: 1400px) {
+  .nav-links {
+    gap: 1.5rem;
+  }
+
+  .nav-item {
+    font-size: 1rem;
+  }
+
+  .nav-actions {
+    gap: 0.8rem;
+  }
+
+  .login-btn,
+  .register-btn {
+    padding: 0.5rem 1.2rem;
+    font-size: 0.95rem;
+  }
+
+  .search-txt {
+    width: 110px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .nav-links {
+    gap: 1rem;
+  }
+
+  .nav-item {
+    font-size: 0.92rem;
+  }
+
+  .nav-actions {
+    gap: 0.6rem;
+  }
+
+  .login-btn,
+  .register-btn {
+    padding: 0.45rem 1rem;
+    font-size: 0.88rem;
+  }
+
+  .search-txt {
+    width: 90px;
+    font-size: 0.9rem;
+  }
+
+  .logo {
+    font-size: 1.7rem;
+    gap: 8px;
+  }
+
+  .nav-logo-img {
+    height: 45px;
+  }
 }
 
 @media (max-width: 900px) {
@@ -1117,6 +1184,7 @@ body.dark-mode {
   font-weight: 600;
   font-size: 1.1rem;
   transition: all 0.3s;
+  white-space: nowrap;
 }
 
 .register-btn:hover {
@@ -1745,6 +1813,7 @@ body.dark-mode .admin-header {
   border: none;
   transition: all 0.2s;
   outline: none;
+  white-space: nowrap;
 }
 
 .action-btn i {
@@ -3225,7 +3294,7 @@ img, video, iframe, embed, object, table {
 .card h3,
 .card p,
 .card-content {
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   word-break: normal;
   min-width: 0;
 }
