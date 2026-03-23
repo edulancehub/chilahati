@@ -59,12 +59,13 @@ export default function Footer() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img loading="lazy" decoding="async" src="/founding_group.png" alt="স্বপ্নতরী ফাউন্ডেশন" className="footer-logo"/>
                 <p>&copy; 2026 Chilahati.com &bull; স্বপ্নতরী ফাউন্ডেশন। সর্বস্বত্ব সংরক্ষিত।</p>
-                <p className="maintained-by">
-                    Maintained by{" "}
+                <div className="luminex-footer-promo">
+                    <span className="luminex-footer-label">Built &amp; Maintained by</span>
                     <a href="https://luminexlabs.io" target="_blank" rel="noopener noreferrer" className="maintained-link">
-                        <i className="fa-solid fa-bolt"></i> luminexlabs.io
+                        <i className="fa-solid fa-bolt"></i> LuminexLabs.io
                     </a>
-                </p>
+                    <span className="luminex-footer-tagline">Custom Web &amp; App Development</span>
+                </div>
             </div>
         </footer>
     );

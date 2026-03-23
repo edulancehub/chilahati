@@ -25,6 +25,22 @@ export default function Home() {
         <p className="subtitle">Gateway to the North &bull; Preserving Our History &amp; People</p>
       </header>
 
+      {/* LuminexLabs promotion banner */}
+      <a
+        href="https://luminexlabs.io"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="luminex-banner"
+        aria-label="Visit LuminexLabs for custom apps and websites"
+      >
+        <span className="luminex-banner-icon"><i className="fa-solid fa-bolt"></i></span>
+        <span className="luminex-banner-text">
+          <strong>Need a Custom Website or App?</strong>
+          <span className="luminex-banner-sub">Visit <span className="luminex-brand">luminexlabs.io</span> — Professional web &amp; app development</span>
+        </span>
+        <span className="luminex-banner-cta">Explore <i className="fa-solid fa-arrow-right"></i></span>
+      </a>
+
       <div className="menu-grid">
         {categories.map((cat) => (
           <Link key={cat.href} href={cat.href} className={`card ${cat.cls}`}>
