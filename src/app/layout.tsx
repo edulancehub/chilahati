@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Poppins, Noto_Sans_Bengali } from "next/font/google";
 import "./globals.css";
 import "react-quill-new/dist/quill.snow.css";
 import { AuthProvider } from "@/context/AuthContext";
@@ -11,6 +11,13 @@ const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
   display: "swap",
   variable: "--font-poppins",
+});
+
+const notoSansBengali = Noto_Sans_Bengali({
+  subsets: ["bengali"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-bengali",
 });
 
 export const metadata: Metadata = {
@@ -50,7 +57,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="bn" className={poppins.variable}>
+    <html lang="bn" className={`${poppins.variable} ${notoSansBengali.variable}`}>
       <head>
         <link
           rel="stylesheet"

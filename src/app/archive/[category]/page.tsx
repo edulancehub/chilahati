@@ -82,8 +82,8 @@ export default function ArchiveCategoryPage({ params }: { params: Promise<{ cate
         <div className="main-content">
             <header style={{ marginBottom: "2rem" }}>
                 <nav style={{ marginBottom: "10px", fontSize: "0.9rem", opacity: 0.7, textTransform: "capitalize" }}>
-                    <Link href="/" style={{ color: "white", textTransform: "none" }}>Home</Link> /{" "}
-                    <Link href={`/archive/${category}`} style={{ color: "white" }}>{displayCategory}</Link>
+                    <Link href="/" style={{ color: "inherit", textTransform: "none" }}>Home</Link> /{" "}
+                    <Link href={`/archive/${category}`} style={{ color: "inherit" }}>{displayCategory}</Link>
                 </nav>
                 <h1 style={{ textTransform: "capitalize" }}>{title}</h1>
                 <p>{items.length} entries found in this archive.</p>

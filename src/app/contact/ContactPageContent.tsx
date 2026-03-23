@@ -12,7 +12,7 @@ export default function ContactPageContent() {
             <div className="auth-container">
                 <div className="auth-card">
                     <h2><i className="fas fa-envelope"></i> Contact Messages</h2>
-                    <p style={{ color: "rgba(255,255,255,0.7)", marginTop: "0.75rem" }}>
+                    <p style={{ color: "var(--text-muted)", marginTop: "0.75rem" }}>
                         আপনি এডমিন। সব Contact Form মেসেজ দেখতে Admin Panel-এ যান।
                     </p>
                     <Link href="/admin/content-management" className="btn-block" style={{ marginTop: "1.25rem" }}>
